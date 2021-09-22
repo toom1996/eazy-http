@@ -1,0 +1,13 @@
+{
+    "name": "toom1996/eazy-http",
+    "description": "eazy http",
+    "type": "eazy-extension",
+    "license": "BSD-3-Clause",
+    "autoload": {
+        "psr-4": {
+            "Toom1996\\EazyHttp\\": "src/"
+        }
+    },
+    "minimum-stability": "dev",
+    "require": {}
+}
