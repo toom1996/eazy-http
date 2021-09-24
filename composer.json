@@ -1,0 +1,6 @@
+{
+    "name": "eazysoft/eazy-http",
+    "type": "library",
+    "minimum-stability": "dev",
+    "require": {}
+}
