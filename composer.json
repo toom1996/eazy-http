@@ -9,6 +9,6 @@
         }
     },
     "extra": {
-        "bootstrap": 'eazy\\http\\Bootstrap'
+        "bootstrap": "eazy\\http\\Bootstrap"
     }
 }
