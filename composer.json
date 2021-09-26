@@ -2,5 +2,10 @@
     "name": "eazysoft/eazy-http",
     "type": "eazy-extension",
     "minimum-stability": "dev",
-    "require": {}
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "eazy\\http\\": "src/"
+        }
+    }
 }
