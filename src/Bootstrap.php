@@ -2,27 +2,30 @@
 
 namespace eazy\http;
 
-use eazy\base\BootstrapInterface;
+use eazy\base\BootstrapCommandInterface;
+use eazy\http\command\HttpInstallCommand;
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
-class Bootstrap extends Command implements BootstrapInterface
+class Bootstrap implements BootstrapCommandInterface
 {
+    /**
+     * @var array|string[] 
+     */
+    protected array $commands = [
+        HttpInstallCommand::class
+    ];
 
-    protected function configure()
+    /**
+     * {@inheritDoc}
+     */
+    public function bootstrap(Application &$console)
     {
-        $this->setName('hello-world')
-            ->setDescription('Prints Hello-World!')
-            ->setHelp('Demonstration of custom commands created by Symfony Console component.')
-            ->addArgument('username', InputArgument::REQUIRED, 'Pass the username.');
-    }
-
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {
-        $output->writeln(sprintf('Hello World!, %s', $input->getArgument('username')));
-    }
-
-    public function bootstrap()
-    {
-        // TODO: Implement bootstrap() method.
+        foreach ($this->commands as $command) {
+            $console->add(new $command);
+        }
     }
 }
