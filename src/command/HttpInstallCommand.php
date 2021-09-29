@@ -17,8 +17,6 @@ class HttpInstallCommand extends BaseCommand
     protected string $help = 'This command allow you to create models...';
 
     protected array $argument = [
-        ['name', InputArgument::REQUIRED, 'what\'s model you want to create ?'],
-        ['optional_argument', InputArgument::OPTIONAL, 'this is a optional argument'],
     ];
     
 
