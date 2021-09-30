@@ -26,19 +26,22 @@ class WorkerStartCallback
 
     public static function onWorkerStart($server, int $workerId)
     {
-        if ($server->taskworker) {
-            $workerAlias = "TaskWorker#{$workerId}";
-        } else {
-            $workerAlias = "Worker#{$workerId}";
+        try {
+            if ($server->taskworker) {
+                $workerAlias = "TaskWorker#{$workerId}";
+            } else {
+                $workerAlias = "Worker#{$workerId}";
+            }
+
+            Eazy::info($workerAlias);
+            swoole_set_process_name($workerAlias);
+        }catch (\Throwable $exception) {
+            Eazy::error($exception->getMessage());
+            exit($exception->getCode());
         }
 
-//        Stdout::info($workerAlias);
-        swoole_set_process_name($workerAlias);
-        register_shutdown_function(function () {
-//            Stdout::error(error_get_last());
-        });
-
-//        Eazy::$config = require APP_PATH.'/config/config.php';
+        Eazy::$config = require APP_PATH.'/config/config.php';
+        
 //        spl_autoload_register(function ($className) {
 //            if (strpos($className, '\\') !== false) {
 //                $classFile =

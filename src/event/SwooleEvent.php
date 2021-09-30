@@ -3,13 +3,6 @@
 
 namespace eazy\http\event;
 
-/**
- * Class SwooleEvent
- *
- * @author: TOOM1996
- * @since 1.0.0
- * @license http://www.apache.org/licenses/LICENSE-2.0
- */
 class SwooleEvent
 {
     /**
@@ -17,6 +10,12 @@ class SwooleEvent
      * For details, please see https://wiki.swoole.com/#/server/events?id=onworkerstart.
      */
     const SWOOLE_ON_WORKER_START = 'workerStart';
+
+    /**
+     * Swoole event `onWorkerError`.
+     * For details, please see https://wiki.swoole.com/#/server/events?id=onworkererror.
+     */
+    const SWOOLE_ON_WORKER_ERROR = 'workerError';
 
     /**
      * Swoole event `onRequest`.
@@ -29,4 +28,6 @@ class SwooleEvent
      * For details, please see https://wiki.swoole.com/#/server/events?id=onstart.
      */
     const SWOOLE_ON_START = 'start';
+
+
 }

@@ -15,6 +15,7 @@ class RequestCallback
 
     public static function onRequest(Request $request, Response $response)
     {
+        Eazy::info('test');
         return $response->end('22');
         (new Eazy($request, $response))->run();
     }

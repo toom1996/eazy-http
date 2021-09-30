@@ -10,6 +10,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class HttpInstallCommand extends BaseCommand
 {
+    
+    
     protected string $name = 'http:install';
 
     protected string $description = 'Install eazy http server.';
