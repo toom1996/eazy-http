@@ -1,13 +1,14 @@
 {
-    "name": "toom1996/eazy-http",
-    "description": "eazy http",
+    "name": "eazysoft/eazy-http",
     "type": "eazy-extension",
-    "license": "BSD-3-Clause",
+    "minimum-stability": "dev",
+    "require": {},
     "autoload": {
         "psr-4": {
-            "Toom1996\\EazyHttp\\": "src/"
+            "eazy\\http\\": "src/"
         }
     },
-    "minimum-stability": "dev",
-    "require": {}
+    "extra": {
+        "bootstrap": "eazy\\http\\Bootstrap"
+    }
 }
