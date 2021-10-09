@@ -10,9 +10,11 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\Question;
 
 class InstallCommand extends BaseCommand
 {
+
     protected string $name = 'http:install';
 
     protected string $description = 'Install eazy http server.';
@@ -23,42 +25,57 @@ class InstallCommand extends BaseCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->install();
-        $output->writeln(('Hello World!'));
+        $helper = $this->getHelper('question');
+        $question =
+            new Question("Does this command overwrite the modified code, or execute it? (y/n)  ",
+                'y');
+        $answer = $helper->ask($input, $output, $question);
+        if ($answer === 'y') {
+            $this->install($output);
+        }
 
         return 0;
     }
 
-    private function install()
+    private function install(OutputInterface $output)
     {
         $config = require APP_CONFIG;
-        if (!isset($config[Bootstrap::$packageName])) {
-            $config[Bootstrap::$packageName] = [
-                'server' => [
-                    'host' => "0.0.0.0",
-                    'port' => 9503,
-                    'event' => [
-                        \eazy\http\event\SwooleEvent::SWOOLE_ON_START => [\eazy\http\event\StartCallback::class, 'onStart'],
-                    ],
-                    'setting' => [
-                        //        'enable_static_handler' => APP_DEBUG,
-                        //        'document_root' => APP_PATH . '/web',
-                        'worker_num' => 2,
-                        'enable_coroutine' => true,
-                        //                        'hook_flags' => SWOOLE_HOOK_ALL,
-                        'daemonize' => false,
-                        'log_file' => APP_PATH . '/runtime/http.log',
-                        'pid_file' => APP_PATH . '/runtime/server.pid',
-                    ],
-                ],
-                'config' => []
-            ];
-            $config =  BaseArrayHelper::varexport($config, true);;
-            file_put_contents(APP_CONFIG, "<?php\n\nreturn $config;\n");
-            // invalidate opcache of extensions.php if exists
-            if (function_exists('opcache_invalidate')) {
-                @opcache_invalidate($file, true);
-            }
+        $config[Bootstrap::$packageName] = $this->getServerConfig();
+        $config = BaseArrayHelper::varexport($config, true);;
+        file_put_contents(APP_CONFIG, "<?php\n\nreturn $config;\n");
+        // invalidate opcache of extensions.php if exists
+        if (function_exists('opcache_invalidate')) {
+            @opcache_invalidate($file, true);
         }
+        $output->writeln("ok");
+    }
+
+
+    private function getServerConfig()
+    {
+        return [
+            'server' => [
+                'host' => "0.0.0.0",
+                'port' => 9503,
+                'setting' => [
+                    'enable_static_handler' => true,
+                    'document_root' => APP_PATH . '/web',
+                    'worker_num' => 2,
+                    'enable_coroutine' => true,
+                    // SWOOLE_HOOK_ALL
+                    'hook_flags' => SWOOLE_HOOK_ALL,
+                    'daemonize'  => false,
+                    'log_file'   => APP_PATH.'/runtime/http.log',
+                    'pid_file'   => APP_PATH.'/runtime/server.pid',
+                ],
+            ],
+            'config' => [
+                'aliases' => [
+                    '@controllers' => APP_PATH . '/controllers',
+                ],
+                'bootstrap' => [],
+                'components' => [],
+            ]
+        ];
     }
 }
