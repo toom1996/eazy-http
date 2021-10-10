@@ -4,15 +4,16 @@ namespace eazy\http\command;
 
 use eazy\base\BaseCommand;
 use eazy\Eazy;
+use eazy\http\Bootstrap;
 use eazy\http\event\StartCallback;
 use eazy\http\event\SwooleEvent;
 use eazy\http\Server;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class HttpStartCommand extends BaseCommand
+class ReloadCommand extends BaseCommand
 {
-    protected string $name = 'http:start';
+    protected string $name = 'http:reload';
 
     protected string $description = 'Start eazy http server.';
 
@@ -23,9 +24,7 @@ class HttpStartCommand extends BaseCommand
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $config = require APP_PATH . '/http/config/server.php';
-        (new Server($config))->run();
-         $output->write("fuck you~");
+         @posix_kill($pid, $Signal);
          return 0;
     }
 }

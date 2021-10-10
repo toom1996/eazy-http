@@ -40,22 +40,22 @@ class WorkerStartCallback
             exit($exception->getCode());
         }
 
-        Eazy::$config = require APP_PATH.'/config/config.php';
+//        Eazy::$config = require APP_PATH.'/config/config.php';
         
-//        spl_autoload_register(function ($className) {
-//            if (strpos($className, '\\') !== false) {
-//                $classFile =
-//                    Eazy::getAlias('@'.str_replace('\\', '/', $className)
-//                        .'.php', false);
-//                if ($classFile === false || ! is_file($classFile)) {
-//                    return;
-//                }
-//            } else {
-//                return;
-//            }
-//
-//            require $classFile;
-//        }, true, true);
+        spl_autoload_register(function ($className) {
+            if (strpos($className, '\\') !== false) {
+                $classFile =
+                    Eazy::getAlias('@'.str_replace('\\', '/', $className)
+                        .'.php', false);
+                if ($classFile === false || ! is_file($classFile)) {
+                    return;
+                }
+            } else {
+                return;
+            }
+
+            require $classFile;
+        }, true, true);
         self::initConfigure();
     }
 
