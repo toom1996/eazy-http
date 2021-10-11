@@ -97,23 +97,39 @@ class InstallCommand extends BaseCommand
                 [
                     'name' => 's1',
                     'host' => "0.0.0.0",
-                    'port' => 9503,
+                    'port' => 9502,
                     'setting' => [
                         'enable_static_handler' => true,
-                        'document_root' => APP_PATH . '/web',
+                        'document_root' => $this->installPath . '/web',
                         'worker_num' => 2,
                         'enable_coroutine' => true,
                         // SWOOLE_HOOK_ALL
                         'hook_flags' => SWOOLE_HOOK_ALL,
                         'daemonize'  => false,
-                        'log_file'   => APP_PATH.'/runtime/http.log',
-                        'pid_file'   => APP_PATH.'/runtime/server.pid',
+                        'log_file'   => $this->installPath . '/runtime/http.log',
+                        'pid_file'   => $this->installPath . '/runtime/server.pid',
+                    ],
+                ],
+                [
+                    'name' => 's2',
+                    'host' => "0.0.0.0",
+                    'port' => 9503,
+                    'setting' => [
+                        'enable_static_handler' => true,
+                        'document_root' => $this->installPath . '/web',
+                        'worker_num' => 2,
+                        'enable_coroutine' => true,
+                        // SWOOLE_HOOK_ALL
+                        'hook_flags' => SWOOLE_HOOK_ALL,
+                        'daemonize'  => false,
+                        'log_file'   => $this->installPath . '/runtime/http.log',
+                        'pid_file'   => $this->installPath . '/runtime/server.pid',
                     ],
                 ]
             ],
             'config' => [
                 'aliases' => [
-                    '@controllers' => APP_PATH . '/controllers',
+                    '@controllers' => $this->installPath . '/controllers',
                 ],
                 'bootstrap' => [],
                 'components' => [],

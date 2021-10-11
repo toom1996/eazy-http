@@ -25,13 +25,19 @@ class StartCommand extends BaseCommand
      */
     protected string $description = 'Start eazy http server.';
 
+    protected array $arguments = [
+    ];
+
     /**
      * {@inheritdoc}
      */
     protected array $options = [
-//        ['daemonize', 'd', InputOption::VALUE_NONE, 'Use daemonize mode ?'],
-        ['server', 's', InputOption::VALUE_OPTIONAL, 'Start specified server.'],
+        ['daemonize', 'd', InputOption::VALUE_OPTIONAL, 'Default `true`'],
+        ['server', 's', InputOption::VALUE_REQUIRED, 'Which server want to start?'],
+        ['mode', 'm', InputOption::VALUE_OPTIONAL, 'DEV OR PROD']
     ];
+
+    private array $defaultSetting = [];
 
     /**
      * {@inheritdoc}
@@ -42,8 +48,25 @@ class StartCommand extends BaseCommand
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $isDaemonize = $input->getOption('server');
-        var_dump($isDaemonize);
+        $server = $input->getOption('server');
+//        $isDaemonize = strtolower($input->getOption('daemonize')) == 'true' ? true : false;
+        $config = require APP_CONFIG;
+        $serverConfigs = ($config[Bootstrap::$packageName]['server']);
+        if ($server) {
+            $server = explode(',', $server);
+        }
+        var_dump($server);
+        foreach ($serverConfigs as $serverConfig) {
+            // daemonize mode
+            $serverConfig['setting']['daemonize'] = true;
+            if (is_array($server) && isset($serverConfig['name']) && in_array($serverConfig['name'], $server)) {
+                (new Server($serverConfig))->run();
+            }elseif($server === NULL){
+                (new Server($serverConfig))->run();
+            }
+        }
+//        var_dump($server);
+
 //        $isDaemonize = $input->getOption('daemonize');
 //        $config = $input->getOption('config');
 
@@ -55,9 +78,24 @@ class StartCommand extends BaseCommand
 //
 //        }
 //        $config = ($config[Bootstrap::$packageName]['server']);
-//        (new Server($config))->run();
 //        var_dump($aa);
-         $output->write("fuck you~");
+//         $output->write("fuck you~");
          return 0;
+    }
+
+
+    private function initSetting()
+    {
+        $this->defaultSetting = [
+            'enable_static_handler' => true,
+            'document_root' => $this->installPath . '/web',
+            'worker_num' => 2,
+            'enable_coroutine' => true,
+            // SWOOLE_HOOK_ALL
+            'hook_flags' => SWOOLE_HOOK_ALL,
+            'daemonize'  => false,
+            'log_file'   => $this->installPath . '/runtime/http.log',
+            'pid_file'   => $this->installPath . '/runtime/server.pid',
+        ];
     }
 }
