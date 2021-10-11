@@ -83,10 +83,6 @@ class InstallCommand extends BaseCommand
         $this->generateView();
         // generate runtime directory.
         $this->generateRuntimeDirectory();
-        // invalidate opcache of extensions.php if exists
-        if (function_exists('opcache_invalidate')) {
-            @opcache_invalidate($file, true);
-        }
     }
 
     /**
@@ -205,5 +201,9 @@ class SiteController
         $pathInfo = pathinfo($file);
         BaseFileHelper::createDirectory($pathInfo['dirname']);
         file_put_contents($pathInfo['dirname'] . DIRECTORY_SEPARATOR . $pathInfo['basename'], $content);
+        // invalidate opcache of extensions.php if exists
+        if (function_exists('opcache_invalidate')) {
+            @opcache_invalidate($file, true);
+        }
     }
 }
