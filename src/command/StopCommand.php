@@ -9,23 +9,24 @@ use eazy\http\event\StartCallback;
 use eazy\http\event\SwooleEvent;
 use eazy\http\Server;
 use Swoole\FastCGI;
+use Swoole\Process;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Swoole\Process as SwooleProcess;
 
-class StartCommand extends BaseCommand
+class StopCommand extends BaseCommand
 {
     /**
      * {@inheritdoc}
      */
-    protected string $name = 'http:start';
+    protected string $name = 'http:stop';
 
     /**
      * {@inheritdoc}
      */
-    protected string $description = 'Start eazy http server.';
+    protected string $description = 'Stop eazy http server.';
 
     /**
      * {@inheritdoc}
@@ -49,6 +50,7 @@ class StartCommand extends BaseCommand
             $output->writeln("<error>Please select at least one server.</error>");
             return 0;
         }
+
         $config = require APP_CONFIG;
         $serverConfigs = ($config[Bootstrap::$packageName]['server']);
         $server = explode(',', $server);
@@ -56,12 +58,7 @@ class StartCommand extends BaseCommand
             // daemonize mode
             $serverConfig['setting']['daemonize'] = true;
             if (is_array($server) && isset($serverConfig['name']) && in_array($serverConfig['name'], $server)) {
-                $process = new SwooleProcess(function () use ($serverConfig, $output) {
-                    (new Server($serverConfig))->run();
-                    $output->writeln("<info>Server [{$serverConfig['name']}] start.</info>");
-                });
-                $process->start(); // 启动子进程
-                SwooleProcess::wait();
+                Process::kill(file_get_contents($serverConfig['setting']['pid_file']));
             }
         }
 

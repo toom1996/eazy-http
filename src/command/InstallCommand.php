@@ -60,7 +60,7 @@ class InstallCommand extends BaseCommand
             $this->install();
         }
 
-        $output->writeln("install successful!");
+        $output->writeln("<info>install successful!</info>");
         return 0;
     }
 

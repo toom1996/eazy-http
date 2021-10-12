@@ -5,7 +5,7 @@ namespace eazy\http;
 use eazy\base\BootstrapCommandInterface;
 use eazy\http\command\ReloadCommand;
 use eazy\http\command\StartCommand;
-use eazy\http\command\HttpStopCommand;
+use eazy\http\command\StopCommand;
 use eazy\http\command\InstallCommand;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
@@ -23,7 +23,7 @@ class Bootstrap implements BootstrapCommandInterface
     protected array $commands = [
         InstallCommand::class,
         StartCommand::class,
-        HttpStopCommand::class,
+        StopCommand::class,
         ReloadCommand::class,
     ];
 
