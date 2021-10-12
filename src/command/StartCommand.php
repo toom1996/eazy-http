@@ -56,11 +56,12 @@ class StartCommand extends BaseCommand
             // daemonize mode
             $serverConfig['setting']['daemonize'] = true;
             if (is_array($server) && isset($serverConfig['name']) && in_array($serverConfig['name'], $server)) {
-                $process = new SwooleProcess(function () use ($serverConfig, $output) {
-                    (new Server($serverConfig))->run();
-                    $output->writeln("<info>Server [{$serverConfig['name']}] start.</info>");
+                $process = new SwooleProcess(function () use ($serverConfig) {
+                    $server = new Server($serverConfig);
+                    $server->run();
                 });
                 $process->start(); // 启动子进程
+                $output->writeln("<info>Server#{$serverConfig['name']} start.</info>");
                 SwooleProcess::wait();
             }
         }

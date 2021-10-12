@@ -58,7 +58,9 @@ class StopCommand extends BaseCommand
             // daemonize mode
             $serverConfig['setting']['daemonize'] = true;
             if (is_array($server) && isset($serverConfig['name']) && in_array($serverConfig['name'], $server)) {
+                var_dump(file_get_contents($serverConfig['setting']['pid_file']));
                 Process::kill(file_get_contents($serverConfig['setting']['pid_file']));
+                $output->writeln("<info>Server#{$serverConfig['name']} stop.</info>");
             }
         }
 

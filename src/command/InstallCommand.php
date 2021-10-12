@@ -101,13 +101,13 @@ class InstallCommand extends BaseCommand
                     'setting' => [
                         'enable_static_handler' => true,
                         'document_root' => $this->installPath . '/web',
-                        'worker_num' => 2,
+                        'worker_num' => swoole_cpu_num(),
                         'enable_coroutine' => true,
                         // SWOOLE_HOOK_ALL
                         'hook_flags' => SWOOLE_HOOK_ALL,
                         'daemonize'  => false,
-                        'log_file'   => $this->installPath . '/runtime/http.log',
-                        'pid_file'   => $this->installPath . '/runtime/server.pid',
+                        'log_file'   => $this->installPath . '/runtime/s1.log',
+                        'pid_file'   => $this->installPath . '/runtime/s1.pid',
                     ],
                 ],
                 [
@@ -117,13 +117,13 @@ class InstallCommand extends BaseCommand
                     'setting' => [
                         'enable_static_handler' => true,
                         'document_root' => $this->installPath . '/web',
-                        'worker_num' => 2,
+                        'worker_num' => swoole_cpu_num(),
                         'enable_coroutine' => true,
                         // SWOOLE_HOOK_ALL
                         'hook_flags' => SWOOLE_HOOK_ALL,
                         'daemonize'  => false,
-                        'log_file'   => $this->installPath . '/runtime/http.log',
-                        'pid_file'   => $this->installPath . '/runtime/server.pid',
+                        'log_file'   => $this->installPath . '/runtime/s2.log',
+                        'pid_file'   => $this->installPath . '/runtime/s2.pid',
                     ],
                 ]
             ],
