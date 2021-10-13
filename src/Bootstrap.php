@@ -5,8 +5,10 @@ namespace eazy\http;
 use eazy\base\BootstrapCommandInterface;
 use eazy\http\command\ReloadCommand;
 use eazy\http\command\StartCommand;
+use eazy\http\command\StatusCommand;
 use eazy\http\command\StopCommand;
 use eazy\http\command\InstallCommand;
+use Swoole\Http\Status;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -25,6 +27,7 @@ class Bootstrap implements BootstrapCommandInterface
         StartCommand::class,
         StopCommand::class,
         ReloadCommand::class,
+        StatusCommand::class,
     ];
 
     /**

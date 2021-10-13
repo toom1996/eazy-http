@@ -16,12 +16,12 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Swoole\Process as SwooleProcess;
 
-class StopCommand extends BaseCommand
+class StatusCommand extends BaseCommand
 {
     /**
      * {@inheritdoc}
      */
-    protected string $name = 'http:stop';
+    protected string $name = 'http:status';
 
     /**
      * {@inheritdoc}
