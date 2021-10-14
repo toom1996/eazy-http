@@ -2,6 +2,7 @@
 
 namespace eazy\http;
 
+use DI\ContainerBuilder;
 use eazy\base\BootstrapCommandInterface;
 use eazy\Eazy;
 use eazy\http\command\ReloadCommand;

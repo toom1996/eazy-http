@@ -19,7 +19,7 @@ class RequestCallback
 
     public static function onRequest(Request $request, Response $response)
     {
-        
+        var_dump(Eazy::$container->get('urlManager'));
         return $response->end('22');
         new Application($Request, $response);
         (new Eazy($request, $response))->run();

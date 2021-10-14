@@ -5,7 +5,9 @@ namespace eazy\http\event;
 
 
 use DI\ContainerBuilder;
+use eazy\di\Di;
 use eazy\Eazy;
+use eazy\http\Bootstrap;
 use eazy\http\components\UrlManager;
 use toom1996\base\Exception;
 use toom1996\base\Stdout;
@@ -28,15 +30,12 @@ class WorkerStartCallback
 
     public static function onWorkerStart($server, int $workerId)
     {
+        Eazy::$container = new Di();
         try {
-            Eazy::$container = new ContainerBuilder;
-            Eazy::$container->addDefinitions([UrlManager::class => function() {
-                return ['array'];
-            }]);
-            $c = Eazy::$container->build();
-
-            var_dump($c->get(UrlManager::class));
-            echo 123;
+            $config = include APP_CONFIG;
+            foreach ($config[Bootstrap::$packageName]['config']['bootstrap'] as $component) {
+                Eazy::$container->set($component, $config[Bootstrap::$packageName]['config']['components'][$component]);
+            }
             if ($server->taskworker) {
                 $workerAlias = "TaskWorker#{$workerId}";
             } else {
@@ -100,5 +99,11 @@ class WorkerStartCallback
 //            $def = Eazy::$config['components'][$component];
 //            Eazy::$config['components'][$component] = Eazy::createObject($def);
 //        }
+    }
+
+
+    private function initBootstrapComponet($c)
+    {
+
     }
 }
