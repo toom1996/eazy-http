@@ -38,10 +38,6 @@ class StartCommand extends BaseCommand
 
     /**
      * {@inheritdoc}
-     * @param  \Symfony\Component\Console\Input\InputInterface  $input
-     * @param  \Symfony\Component\Console\Output\OutputInterface  $output
-     *
-     * @return int
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
@@ -54,8 +50,8 @@ class StartCommand extends BaseCommand
         $serverConfigs = ($config[Bootstrap::$packageName]['server']);
         $server = explode(',', $server);
         foreach ($serverConfigs as $serverConfig) {
-            // daemonize mode
-            $serverConfig['setting']['daemonize'] = true;
+            // force daemonize mode
+//            $serverConfig['setting']['daemonize'] = true;
             if (is_array($server) && isset($serverConfig['name']) && in_array($serverConfig['name'], $server)) {
                 $process = new SwooleProcess(function (\Swoole\Process $childProcess) use ($serverConfig) {
                     $server = new Server($serverConfig);

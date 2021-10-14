@@ -33,4 +33,14 @@ class Application
     {
         self::$app = &$this;
     }
+    
+    public function getResponse()
+    {
+        
+    }
+    
+    public function getRequest()
+    {
+        
+    }
 }

@@ -4,7 +4,9 @@
 namespace eazy\http\event;
 
 
+use DI\ContainerBuilder;
 use eazy\Eazy;
+use eazy\http\components\UrlManager;
 use toom1996\base\Exception;
 use toom1996\base\Stdout;
 use toom1996\di\Container;
@@ -27,6 +29,14 @@ class WorkerStartCallback
     public static function onWorkerStart($server, int $workerId)
     {
         try {
+            Eazy::$container = new ContainerBuilder;
+            Eazy::$container->addDefinitions([UrlManager::class => function() {
+                return ['array'];
+            }]);
+            $c = Eazy::$container->build();
+
+            var_dump($c->get(UrlManager::class));
+            echo 123;
             if ($server->taskworker) {
                 $workerAlias = "TaskWorker#{$workerId}";
             } else {
@@ -43,6 +53,7 @@ class WorkerStartCallback
 //        Eazy::$config = require APP_PATH.'/config/config.php';
         
         spl_autoload_register(function ($className) {
+            echo '-----------------';
             if (strpos($className, '\\') !== false) {
                 $classFile =
                     Eazy::getAlias('@'.str_replace('\\', '/', $className)
@@ -56,7 +67,7 @@ class WorkerStartCallback
 
             require $classFile;
         }, true, true);
-        self::initConfigure();
+//        self::initConfigure();
     }
 
     /**

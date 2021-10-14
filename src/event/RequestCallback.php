@@ -4,7 +4,11 @@
 namespace eazy\http\event;
 
 
+use DI\Container;
 use eazy\Eazy;
+use eazy\http\Application;
+use eazy\http\Components;
+use eazy\http\RouterDispatcher;
 use Swoole\Coroutine;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
@@ -15,8 +19,9 @@ class RequestCallback
 
     public static function onRequest(Request $request, Response $response)
     {
-//        Eazy::info('test');
+        
         return $response->end('22');
+        new Application($Request, $response);
         (new Eazy($request, $response))->run();
     }
 }

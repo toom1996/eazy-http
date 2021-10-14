@@ -3,6 +3,7 @@
 namespace eazy\http;
 
 use eazy\base\BootstrapCommandInterface;
+use eazy\Eazy;
 use eazy\http\command\ReloadCommand;
 use eazy\http\command\StartCommand;
 use eazy\http\command\StatusCommand;
@@ -20,7 +21,7 @@ class Bootstrap implements BootstrapCommandInterface
     public static string $packageName = 'eazysoft/eazy-http';
 
     /**
-     * @var array|string[] 
+     * @var array|string[]
      */
     protected array $commands = [
         InstallCommand::class,
