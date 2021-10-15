@@ -2,7 +2,7 @@
 
 namespace eazy\http;
 
-class Application
+class Application extends Module
 {
     /**
      * @var \eazy\http\Application
@@ -22,8 +22,6 @@ class Application
     public function __construct(\Swoole\Http\Request $request, \Swoole\Http\Response $response)
     {
         $this->bootstrap();
-        $this->getResponse($response);
-        $this->getRequest($request);
     }
 
     /**
@@ -33,14 +31,33 @@ class Application
     {
         self::$app = &$this;
     }
-    
-    public function getResponse()
+
+    public function run()
     {
-        
+        var_dump($this->getComponet('request'));
+//        try {
+//            $this->handleRequest($this->getComponet('request'))
+//                ->send();
+//        }catch (\Swoole\ExitException $e){
+//            $this->getResponse()->content = $e->getStatus();
+//        }catch (\Throwable $e) {
+//            $this->getErrorHandler()->handleException($e);
+//        } finally {
+//            $this->getResponse()->send();
+//        }
+//        $this->getLog()->flush();
+//        self::$app = null;
     }
-    
-    public function getRequest()
+
+    public function handleRequest($request)
     {
-        
+        [$handler, $params] = $request->resolve();
+        $result = $this->runAction($handler);
+        $response = $this->getResponse();
+        if ($result !== null) {
+            $response->content = $result;
+        }
+
+        return $response;
     }
 }

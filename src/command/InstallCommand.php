@@ -131,8 +131,14 @@ class InstallCommand extends BaseCommand
                 'aliases' => [
                     '@controllers' => $this->installPath . '/controllers',
                 ],
-                'bootstrap' => [],
-                'components' => [],
+                'bootstrap' => [
+                    'urlManager'
+                ],
+                'components' => [
+                    'urlManager' => [
+                        'class' => \eazy\http\components\UrlManager::class
+                    ]
+                ],
             ]
         ];
     }
