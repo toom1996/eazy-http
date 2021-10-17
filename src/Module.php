@@ -2,15 +2,24 @@
 
 namespace eazy\http;
 
+use eazy\http\components\Request;
+
 class Module extends ServiceLocator
 {
-    public function getComponet(string $id)
+    /**
+     * 
+     *
+     * @param  string  $id
+     *
+     * @return Request
+     * @throws exceptions\InvalidConfigException
+     */
+    public static function component(string $id)
     {
-        if ($this->has($id)) {
-            return $this->get($id);
+        if (!App::$app->has($id)) {
+            App::$app->set($id);
         }
-        
-        $this->set($id);
-        //        var_dump(self::$app);
+
+        return App::$app->get($id);
     }
 }

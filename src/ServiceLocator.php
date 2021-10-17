@@ -33,19 +33,31 @@ class ServiceLocator extends BaseObject
         throw new InvalidConfigException("Unknown component ID: {$id}");
     }
 
+    /**
+     * 实例化组件
+     *
+     * @param  string  $id
+     * @param  null    $definition
+     *
+     * @throws InvalidConfigException
+     */
     public function set(string $id, $definition = null)
     {
         unset($this->_components[$id]);
-
-
-        if (is_array($definition)) {
-            // e.g Eazy::$app->set('foo', ['class' => foo\bar, 'a' => 'b'])
-            // If has class, it will be overwrite all component attributes.
-            if (isset($definition['class'])) {
-                $this->_components[$id] = Eazy::createObject($definition);
+        // set('className', array());
+        // set('className', object());
+        if (is_string($id)) {
+            $this->_components[$id] = Eazy::createObject(App::$config['components'][$id]['class'], $definition);
+        }elseif (is_array($definition)) {
+            $this->_components[$id] = Eazy::createObject($definition);
+        }elseif(is_object($definition)){
+            if (isset(App::$config['components'][$id]['class'])) {
+                $this->_components[$id] = Eazy::createObject(App::$config['components'][$id]);
+            }else{
+                $this->_components[$id] = $definition;
             }
         }elseif (is_null($definition)) {
-            var_dump(Application::$config[$id]);
+            $this->_components[$id] = Eazy::createObject(App::$config['components'][$id]);
         }
     }
 }

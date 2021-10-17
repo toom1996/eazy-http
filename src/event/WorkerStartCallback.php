@@ -5,8 +5,9 @@ namespace eazy\http\event;
 use DI\ContainerBuilder;
 use eazy\di\Di;
 use eazy\Eazy;
-use eazy\http\Application;
+use eazy\http\App;
 use eazy\http\Bootstrap;
+use eazy\http\components\Request;
 use eazy\http\components\UrlManager;
 use eazy\http\exceptions\InvalidConfigException;
 use toom1996\base\Exception;
@@ -37,7 +38,7 @@ class WorkerStartCallback
     ];
 
     const BOOTSTRAP_COMPONENTS = [
-        'urlManager'
+        'urlManager',
     ];
 
     public static function onWorkerStart($server, int $workerId)
@@ -86,7 +87,7 @@ class WorkerStartCallback
             }
         }
 
-        Application::$config = $config;
+        App::$config = $config;
     }
 
 
