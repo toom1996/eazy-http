@@ -2,7 +2,9 @@
     "name": "eazysoft/eazy-http",
     "type": "eazy-extension",
     "minimum-stability": "dev",
-    "require": {},
+    "require": {
+        "nikic/fast-route": "2.0.x-dev"
+    },
     "autoload": {
         "psr-4": {
             "eazy\\http\\": "src/"
