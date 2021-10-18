@@ -93,10 +93,11 @@ class WorkerStartCallback
 
     private static function bootstrapComponet()
     {
-        if (!isset($config['bootstrap'])) {
+        if (!isset(self::$_config['bootstrap'])) {
             self::$_config['bootstrap'] = [];
         }
-        $bootstrap = array_merge(self::BOOTSTRAP_COMPONENTS, self::$_config['bootstrap']);
+
+        $bootstrap = array_unique(array_merge(self::BOOTSTRAP_COMPONENTS, self::$_config['bootstrap']));
         foreach ($bootstrap as $component) {
             if (!isset(self::$_config['components'][$component])) {
                 throw new InvalidConfigException("Invalid component id:{$component}");

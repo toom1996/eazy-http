@@ -6,7 +6,7 @@ use eazy\base\BaseObject;
 use eazy\Eazy;
 use eazy\http\exceptions\InvalidConfigException;
 
-class ServiceLocator extends BaseObject
+class ServiceLocator extends Component
 {
 
     private array $_components = [];
@@ -26,6 +26,7 @@ class ServiceLocator extends BaseObject
             return $this->_components[$id];
         }
 
+        var_dump(Eazy::$container);
         if (Eazy::$container->has($id)) {
             return Eazy::$container->get($id);
         }
@@ -59,5 +60,14 @@ class ServiceLocator extends BaseObject
         }elseif (is_null($definition)) {
             $this->_components[$id] = Eazy::createObject(App::$config['components'][$id]);
         }
+    }
+
+    public function __get(string $name)
+    {
+        if ($this->has($name)) {
+            return $this->get($name);
+        }
+
+        return parent::__get($name);
     }
 }

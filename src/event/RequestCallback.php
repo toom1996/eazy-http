@@ -19,7 +19,7 @@ class RequestCallback
 
     public static function onRequest(Request $request, Response $response)
     {
-        $response->end(123);
-//        (new App($request, $response))->run();
+//        $response->end(123);
+        (new App($request, $response))->run();
     }
 }
