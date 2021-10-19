@@ -2,12 +2,14 @@
 
 namespace eazy\http;
 
+use eazy\Eazy;
 use Swoole\Http\Request;
 use Symfony\Component\Console\Tester\TesterTrait;
 
 /**
  * Class App
- * @property-read \eazy\http\components\Request $request
+ * @property  \eazy\http\components\Request $request
+ * @property  \eazy\http\components\Response $response
  *
  * @author TOOM <1023150697@qq.com>
  * 
@@ -31,12 +33,15 @@ class App extends Module
      */
     public function __construct(\Swoole\Http\Request $request, \Swoole\Http\Response $response)
     {
+//        $response->detach();
         $this->request = $request;
+//        $this->response = $response;
         self::$get = &$this;
     }
 
     public function __destruct()
     {
+//        echo 'd';
         // TODO: Implement __destruct() method.
     }
 
@@ -44,15 +49,14 @@ class App extends Module
     {
 //        var_dump($this->getComponet('urlManager'));
         try {
-            $this->handleRequest($this->getRequest());
+            $this->handleRequest($this->getRequest())
+                ->send();
         }catch (\Swoole\ExitException $e){
-            var_dump($e->getMessage());
-//            $this->getResponse()->content = $e->getStatus();
+            $this->getResponse()->content = $e->getStatus();
         }catch (\Throwable $e) {
-            var_dump($e->getMessage());
-//            $this->getErrorHandler()->handleException($e);
+            $this->getErrorHandler()->handleException($e);
         } finally {
-//            $this->getResponse()->send();
+            $this->getResponse()->send();
         }
 //        $this->getLog()->flush();
         self::$get = null;
@@ -80,24 +84,62 @@ class App extends Module
     }
 
     /**
-     *
-     *
+     * @return \eazy\http\components\Response
+     */
+    public function getResponse()
+    {
+        if (!$this->has('response')) {
+            $this->set('response');
+        }
+
+        return $this->get('response');
+    }
+
+    /**
+     * @return \eazy\http\components\View
+     */
+    public function getView()
+    {
+        if (!$this->has('view')) {
+            $this->set('view');
+        }
+
+        return $this->get('view');
+    }
+
+    public function getErrorHandler()
+    {
+        if (!$this->has('errorHandler')) {
+            $this->set('errorHandler');
+        }
+
+        return $this->get('errorHandler');
+    }
+
+    /**
      * @param $request \eazy\http\components\Request
+     *
+     * @return \eazy\http\components\Response
      */
     public function handleRequest($request)
     {
         [$handler, $params] = $request->resolve();
-//        $result = $this->runAction($handler);
-//        $response = $this->getResponse();
-//        if ($result !== null) {
-//            $response->content = $result;
-//        }
-//
-//        return $response;
+        $result = $this->runAction($handler);
+        $response = $this->getResponse();
+        if ($result !== null) {
+            $response->content = $result;
+        }
+
+        return $response;
     }
     
-    public function setRequest(Request $request)
+    public function setRequest(\Swoole\Http\Request $request)
     {
         $this->set('request', $request);
+    }
+
+    public function setResponse(\Swoole\Http\Response $response)
+    {
+        $this->set('response', $response);
     }
 }

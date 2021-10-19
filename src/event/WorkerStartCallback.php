@@ -7,8 +7,11 @@ use eazy\di\Di;
 use eazy\Eazy;
 use eazy\http\App;
 use eazy\http\Bootstrap;
+use eazy\http\components\ErrorHandler;
 use eazy\http\components\Request;
+use eazy\http\components\Response;
 use eazy\http\components\UrlManager;
+use eazy\http\components\View;
 use eazy\http\exceptions\InvalidConfigException;
 use toom1996\base\Exception;
 use toom1996\base\Stdout;
@@ -33,8 +36,8 @@ class WorkerStartCallback
         'errorHandler' => ['class' => ErrorHandler::class],
         'urlManager' => ['class' => UrlManager::class],
         'view' => ['class' => View::class],
-        'assetManager' => ['class' => AssetManager::class],
-        'log' => ['class' => LogDispatcher::class],
+//        'assetManager' => ['class' => AssetManager::class],
+//        'log' => ['class' => LogDispatcher::class],
     ];
 
     const BOOTSTRAP_COMPONENTS = [
@@ -44,6 +47,7 @@ class WorkerStartCallback
     public static function onWorkerStart($server, int $workerId)
     {
         Eazy::$container = new Di();
+        Eazy::setAlias('@eazy', dirname(__DIR__));
         try {
             $config = include APP_CONFIG;
             if (!isset($config[Bootstrap::$packageName]['config'])) {
@@ -51,12 +55,13 @@ class WorkerStartCallback
             }
             self::$_config = $config[Bootstrap::$packageName]['config'];
 
+            self::initConfigure();
             // bootstrap components.
             self::bootstrapComponet();
-            self::initConfigure();
 
             swoole_set_process_name($server->taskworker ? "TaskWorker#{$workerId}" :"Worker#{$workerId}");
         }catch (\Throwable $exception) {
+            var_dump($exception);
             Eazy::error($exception->getMessage());
             exit($exception->getCode());
         }

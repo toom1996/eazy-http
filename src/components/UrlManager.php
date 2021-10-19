@@ -8,27 +8,16 @@ use eazy\http\App;
 use eazy\http\Component;
 use eazy\http\exceptions\InvalidConfigException;
 use eazy\http\exceptions\UnknownClassException;
+use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use function FastRoute\simpleDispatcher;
 
 /**
- *
+ * @property array $controllerMap
  */
 class UrlManager extends Component
 {
-    public array $route = [
-        // Welcome page.
-        ['GET', '/', '@controllers/site/index'],
-
-        // Multiple request methods.
-        [['POST', 'DELETE'], '/site/methods', '@controllers/site/methods'],
-
-        // Group route.
-        '/site' => [
-            // You can set different routes to point to the same action.
-            [['GET', 'POST'], '/about.html', '@controllers/site/methods']
-        ],
-    ];
+    public $route = [];
 
     /**
      * @var \FastRoute\Dispatcher
@@ -141,6 +130,9 @@ class UrlManager extends Component
      */
     public function setControllerMap($handler)
     {
+        if (isset($this->_controllerMap[$handler])) {
+            return;
+        }
 
         // If route is `@controllers/site/index`, will be convert @controller to BathPath
         $handlerAlias = Eazy::getAlias($handler);
@@ -160,20 +152,23 @@ class UrlManager extends Component
         $handlerFile = implode('/',
             array_merge(array_slice($ex, 0, count($ex) - 2),
                 [$controller . '.php']));
-        var_dump($handlerFile);
+
         if (!file_exists($handlerFile)) {
             throw new UnknownClassException("{Unknown class {$handler}");
         }
 
         $classNamespace = BaseFileHelper::getNamespace($handlerFile);
         $className = '\\' . $classNamespace . '\\' . basename(str_replace('.php', '', $handlerFile));
-        var_dump($className);
-        $ref = new \ReflectionClass($className);
-        if (!$ref->hasMethod($action)) {
-            throw new InvalidConfigException("class {$className} does not have a method {$action}, please check your config.");
-        }
 
-        $this->_controllerMap[$handler] = Eazy::createObject($className, [$action]);
+//        $ref = new \ReflectionClass($className);
+//        if (!$ref->hasMethod($action)) {
+//            throw new InvalidConfigException("class {$className} does not have a method {$action}, please check your config.");
+//        }
+        $this->_controllerMap[$handler] = Eazy::createObject([
+            'class' => $className,
+            'action' => $action
+        ]);
+        var_dump($this->_controllerMap);
     }
 
     /**

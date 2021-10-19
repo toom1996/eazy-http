@@ -6,49 +6,30 @@ namespace eazy\http;
 
 use eazy\Eazy;
 
-class Controller extends Component
+class Controller extends Module
 {
     public $layout = '@app/views/layouts/main';
 
-    public $actionId;
+    public $action;
 
-    public function __construct($actionId)
-    {
-        $this->actionId = $actionId;
-    }
-
-    /**
-     *
-     *
-     * @param         $view
-     * @param  array  $params
-     *
-     * @return mixed
-     * @throws \ReflectionException
-     * @throws \Throwable
-     * @throws InvalidConfigException
-     */
+    
     public function render($view, $params = [])
     {
-        $content = Eazy::$app->getView()->render($view, $params);
+        $content = App::$get->getView()->render($view, $params);
         return $this->renderContent($content);
     }
 
 
     /**
-     *
-     *
      * @param $content
      *
-     * @return false|string
-     * @throws InvalidConfigException
-     * @throws \Throwable
+     * @return bool|string
      */
     public function renderContent($content)
     {
-        $layoutFile = $this->findLayoutFile(Eazy::$app->getView());
+        $layoutFile = $this->findLayoutFile(App::$get->getView());
         if ($layoutFile !== false) {
-            return Eazy::$app->getView()->renderFile($layoutFile, ['content' => $content], $this);
+            return App::$get->getView()->renderFile($layoutFile, ['content' => $content], $this);
         }
 
         return $content;

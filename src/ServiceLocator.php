@@ -25,8 +25,7 @@ class ServiceLocator extends Component
         if (isset($this->_components[$id])) {
             return $this->_components[$id];
         }
-
-        var_dump(Eazy::$container);
+        
         if (Eazy::$container->has($id)) {
             return Eazy::$container->get($id);
         }
