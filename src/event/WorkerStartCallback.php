@@ -36,7 +36,7 @@ class WorkerStartCallback
         'errorHandler' => ['class' => ErrorHandler::class],
         'urlManager' => ['class' => UrlManager::class],
         'view' => ['class' => View::class],
-//        'assetManager' => ['class' => AssetManager::class],
+        'assetManager' => ['class' => AssetManager::class],
 //        'log' => ['class' => LogDispatcher::class],
     ];
 

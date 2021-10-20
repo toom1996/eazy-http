@@ -8,6 +8,8 @@ use eazy\http\Controller;
 
 class ErrorController extends Controller
 {
+    public $layout = '@eazy/views/layouts/error';
+
     public function actionIndex()
     {
         return $this->render('@eazy/views/error/exception', [

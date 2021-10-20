@@ -271,7 +271,7 @@ class Response extends Component
 
     /**
      *
-     * @param $exception \Exception
+     * @param $exception HttpException
      *
      * @return $this
      */

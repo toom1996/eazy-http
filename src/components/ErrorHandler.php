@@ -24,9 +24,9 @@ class ErrorHandler extends Component
 
     public $maxTraceSourceLines = 13;
 
-    public $previousExceptionView = '@eazy/views/errorHandler/previousException.php';
+    public $previousExceptionView = '@eazy/views/error/previousException.php';
 
-    public $callStackItemView = '@eazy/views/errorHandler/callStackItem.php';
+    public $callStackItemView = '@eazy/views/error/callStackItem.php';
 
     public $traceLine = '{html}';
 

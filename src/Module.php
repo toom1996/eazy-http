@@ -17,8 +17,8 @@ class Module extends ServiceLocator
         }else{
             $controller = App::$get->getUrlManager()->setControllerMap($path);
         }
-        var_dump('-----------------');
-        var_dump($controller);
+        
+        $controller = Eazy::createObject($controller);
         if (is_object($controller) && $controller instanceof Controller) {
             return call_user_func([$controller, $controller->action]);
         }

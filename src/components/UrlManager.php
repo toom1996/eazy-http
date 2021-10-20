@@ -131,7 +131,7 @@ class UrlManager extends Component
     public function setControllerMap($handler)
     {
         if (isset($this->_controllerMap[$handler])) {
-            return;
+            return $this->_controllerMap[$handler];
         }
 
         // If route is `@controllers/site/index`, will be convert @controller to BathPath
@@ -164,11 +164,10 @@ class UrlManager extends Component
 //        if (!$ref->hasMethod($action)) {
 //            throw new InvalidConfigException("class {$className} does not have a method {$action}, please check your config.");
 //        }
-        $this->_controllerMap[$handler] = Eazy::createObject([
+        return $this->_controllerMap[$handler] = [
             'class' => $className,
             'action' => $action
-        ]);
-        var_dump($this->_controllerMap);
+        ];
     }
 
     /**

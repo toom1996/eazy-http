@@ -107,6 +107,9 @@ class App extends Module
         return $this->get('view');
     }
 
+    /**
+     * @return \eazy\http\components\ErrorHandler
+     */
     public function getErrorHandler()
     {
         if (!$this->has('errorHandler')) {

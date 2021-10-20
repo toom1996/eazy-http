@@ -1,9 +1,8 @@
 <?php
-use toom1996\http\ErrorHandler;
 
 /**
- * @var $exception Exception|\toom1996\http\HttpException
- * @var $handler ErrorHandler
+ * @var $exception \Exception | \eazy\http\exceptions\HttpException
+ * @var $handler \eazy\http\components\ErrorHandler
  */
 
 $this->title = 'error';
@@ -23,25 +22,36 @@ $this->title = 'error';
         font-family: -apple-system,Helvetica Neue,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,sans-serif;
     }
 
+    .container {
+        background: linear-gradient(
+                167deg, #fd9faf 50%, #fff 50%) center 60%;
+    }
+
     ul{
         list-style: none;
     }
 
     h1 a {
-        color: rgb(200,59,80);
+        color: #000000;
+        color: white;
+        font-size: 50px;
+        text-decoration: unset;
     }
 
     h1 {
         color: #000000;
+        margin-bottom: .5rem;
+        font-weight: 500;
+        line-height: 1.2;
     }
 
-    .c-header-box {
-        background: #f3f3f3;
-        border-bottom: 1px solid #44395d;
-        word-wrap:break-word;
-        font-family: initial;
-        text-align: unset;
-    }
+    /*.c-header-box {*/
+    /*    background: #f3f3f3;*/
+    /*    border-bottom: 1px solid #44395d;*/
+    /*    word-wrap:break-word;*/
+    /*    font-family: initial;*/
+    /*    text-align: unset;*/
+    /*}*/
 
     .call-stack ul li .element-wrap:hover {
         background-color: #edf9ff;
@@ -86,6 +96,7 @@ $this->title = 'error';
         margin: 15px auto;
         padding: 0 50px;
         position: relative;
+        background-color: #fbfbfb;
     }
 
     .call-stack ul li .code pre {
@@ -96,6 +107,12 @@ $this->title = 'error';
         font-size: 12px;
         font-family: Consolas, monospace;
         display: inline;
+    }
+
+    .call-stack ul {
+        padding: 0;
+        width: 80%;
+        margin: auto;
     }
 
     .element-wrap {
@@ -131,15 +148,22 @@ $this->title = 'error';
         background-color: #ffebeb;
     }
     .c-header-box {
-        padding: 20px 40px 20px 40px;
+        width: 80%;
+        margin: auto;
+        padding: 60px 25px 50px;
+    }
+
+    .c-header-box .error-message {
+        font-size: 1.25rem;
+        font-weight: 300;
     }
 
 </style>
 <div class="container">
     <div class="c-header-box">
         <h1>
-            <?php if ($exception instanceof \toom1996\http\HttpException): ?>
-                <?= $handler->createHttpStatusLink($exception->getCode(), $handler->htmlEncode($exception->getName())) . ' &ndash; ' . get_class($exception);?>
+            <?php if ($exception instanceof \eazy\http\exceptions\HttpException): ?>
+                <?= $handler->createHttpStatusLink($exception->getCode(), $handler->htmlEncode($exception->getName()));?>
             <?php else: ?>
                 <?= $handler->getExceptionName($exception) !== null
                     ? '<span>' . $handler->htmlEncode($exception->getName()) . '</span>' . ' &ndash; ' . $handler->addTypeLinks(get_class($exception))
@@ -147,7 +171,7 @@ $this->title = 'error';
                 ; ?>
             <?php endif; ?>
         </h1>
-        <h1><?= nl2br($handler->htmlEncode($exception->getMessage())) ?></h1>
+        <p class="error-message"><?= nl2br($handler->htmlEncode($exception->getMessage())) ?></p>
         <?= $handler->renderPreviousExceptions($exception) ?>
     </div>
     <div class="call-stack">
