@@ -7,6 +7,7 @@ use eazy\helpers\BaseFileHelper;
 use eazy\http\App;
 use eazy\http\Component;
 use eazy\http\exceptions\InvalidConfigException;
+use eazy\http\exceptions\NotFoundHttpException;
 use eazy\http\exceptions\UnknownClassException;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
@@ -160,10 +161,10 @@ class UrlManager extends Component
         $classNamespace = BaseFileHelper::getNamespace($handlerFile);
         $className = '\\' . $classNamespace . '\\' . basename(str_replace('.php', '', $handlerFile));
 
-//        $ref = new \ReflectionClass($className);
-//        if (!$ref->hasMethod($action)) {
-//            throw new InvalidConfigException("class {$className} does not have a method {$action}, please check your config.");
-//        }
+        //        $ref = new \ReflectionClass($className);
+        //        if (!$ref->hasMethod($action)) {
+        //            throw new InvalidConfigException("class {$className} does not have a method {$action}, please check your config.");
+        //        }
         return $this->_controllerMap[$handler] = [
             'class' => $className,
             'action' => $action
