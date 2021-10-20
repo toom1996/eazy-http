@@ -107,6 +107,7 @@ class WorkerStartCallback
         $bootstrap = array_unique(array_merge(self::BOOTSTRAP_COMPONENTS, self::$_config['bootstrap']));
         Eazy::info('info');
         var_dump($bootstrap);
+        var_dump(self::$_config);
         foreach ($bootstrap as $component) {
             if (!isset(self::$_config['components'][$component])) {
                 throw new InvalidConfigException("Invalid component id:{$component}");
