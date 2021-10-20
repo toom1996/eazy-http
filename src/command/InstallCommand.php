@@ -20,12 +20,12 @@ class InstallCommand extends BaseCommand
      * {@inheritdoc }
      */
     protected string $name = 'http:install';
-
+    
     /**
      * {@inheritdoc }
      */
     protected string $description = 'Generate base code for run http server when you run first.';
-
+    
     /**
      * {@inheritdoc }
      */
@@ -35,7 +35,7 @@ class InstallCommand extends BaseCommand
 
     /**
      * Install file path.
-     * @var string
+     * @var string 
      */
     private string $installPath;
 
@@ -51,7 +51,7 @@ class InstallCommand extends BaseCommand
             $output->writeln("<error>The Swoole PHP extension is required by Eazy. Please see: https://wiki.swoole.com/#/environment to install swoole extension.</error>");
             return 0;
         }
-
+        
         $helper = $this->getHelper('question');
         $question = new Question("<comment>Does this command overwrite the modified code, or execute it? (y/n)</comment>  ", 'y');
         $answer = $helper->ask($input, $output, $question);
@@ -130,6 +130,7 @@ class InstallCommand extends BaseCommand
             'config' => [
                 'aliases' => [
                     '@controllers' => $this->installPath . '/controllers',
+                    '@app' => APP_PATH,
                 ],
                 'bootstrap' => [
                     'urlManager'
@@ -179,11 +180,17 @@ class InstallCommand extends BaseCommand
 
 namespace app\controllers;
 
-class SiteController
+use eazy\http\Controller;
+class SiteController extends Controller
 {
     public function actionIndex()
     {
-        return " . '$this->render' . "('@eazy/views/index');
+        return ". '$this->render' . "('@app/views/index');
+    }
+    
+    public function actionMethod()
+    {
+        return 123;
     }
 }");
     }
@@ -195,7 +202,7 @@ class SiteController
     {
         $this->generateLayout();
         $viewFile = $this->installPath . '/views/index.php';
-
+        
         $this->saveFile($viewFile, "<?php\necho'hello eazy!';");
     }
 
@@ -205,7 +212,7 @@ class SiteController
     private function generateLayout()
     {
         $layoutFile = $this->installPath . '/views/layouts/main.php';
-
+        
         $this->saveFile($layoutFile, '<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -220,7 +227,7 @@ class SiteController
 </body>
 </html>
 '
-        );
+);
     }
 
     private function generateRuntimeDirectory()

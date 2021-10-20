@@ -131,7 +131,9 @@ class UrlManager extends Component
      */
     public function setControllerMap($handler)
     {
+
         if (isset($this->_controllerMap[$handler])) {
+            var_dump($this->_controllerMap);
             return $this->_controllerMap[$handler];
         }
 
@@ -161,14 +163,15 @@ class UrlManager extends Component
         $classNamespace = BaseFileHelper::getNamespace($handlerFile);
         $className = '\\' . $classNamespace . '\\' . basename(str_replace('.php', '', $handlerFile));
 
-        //        $ref = new \ReflectionClass($className);
-        //        if (!$ref->hasMethod($action)) {
-        //            throw new InvalidConfigException("class {$className} does not have a method {$action}, please check your config.");
-        //        }
-        return $this->_controllerMap[$handler] = [
+//        $ref = new \ReflectionClass($className);
+//        if (!$ref->hasMethod($action)) {
+//            throw new InvalidConfigException("class {$className} does not have a method {$action}, please check your config.");
+//        }
+        $this->_controllerMap[$handler] = [
             'class' => $className,
             'action' => $action
         ];
+        return $this->_controllerMap[$handler];
     }
 
     /**
