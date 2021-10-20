@@ -133,6 +133,7 @@ class UrlManager extends Component
      */
     public function setControllerMap($handler)
     {
+
         if (isset($this->_controllerMap[$handler])) {
             var_dump($this->_controllerMap);
             return $this->_controllerMap[$handler];

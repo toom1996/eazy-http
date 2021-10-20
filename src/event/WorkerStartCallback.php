@@ -37,7 +37,7 @@ class WorkerStartCallback
         'urlManager' => ['class' => UrlManager::class],
         'view' => ['class' => View::class],
         'assetManager' => ['class' => AssetManager::class],
-        //        'log' => ['class' => LogDispatcher::class],
+//        'log' => ['class' => LogDispatcher::class],
     ];
 
     const BOOTSTRAP_COMPONENTS = [
@@ -105,7 +105,8 @@ class WorkerStartCallback
         }
 
         $bootstrap = array_unique(array_merge(self::BOOTSTRAP_COMPONENTS, self::$_config['bootstrap']));
-        Eazy::info(print_r($bootstrap));
+        Eazy::info('info');
+        var_dump($bootstrap);
         foreach ($bootstrap as $component) {
             if (!isset(self::$_config['components'][$component])) {
                 throw new InvalidConfigException("Invalid component id:{$component}");
