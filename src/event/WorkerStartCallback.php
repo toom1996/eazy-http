@@ -37,7 +37,7 @@ class WorkerStartCallback
         'urlManager' => ['class' => UrlManager::class],
         'view' => ['class' => View::class],
         'assetManager' => ['class' => AssetManager::class],
-//        'log' => ['class' => LogDispatcher::class],
+        //        'log' => ['class' => LogDispatcher::class],
     ];
 
     const BOOTSTRAP_COMPONENTS = [
@@ -46,6 +46,7 @@ class WorkerStartCallback
 
     public static function onWorkerStart($server, int $workerId)
     {
+        Eazy::info(__FUNCTION__);
         Eazy::$container = new Di();
         Eazy::setAlias('@eazy', dirname(__DIR__));
         try {
@@ -98,6 +99,7 @@ class WorkerStartCallback
 
     private static function bootstrapComponet()
     {
+        Eazy::info(__FUNCTION__);
         if (!isset(self::$_config['bootstrap'])) {
             self::$_config['bootstrap'] = [];
         }
