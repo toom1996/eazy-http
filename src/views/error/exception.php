@@ -92,7 +92,7 @@ $this->title = 'error';
     }
 
     .call-stack ul li .code {
-        min-width: 860px;
+        min-width: 500px;
         margin: 15px auto;
         padding: 0 50px;
         position: relative;
@@ -150,7 +150,7 @@ $this->title = 'error';
     .c-header-box {
         width: 80%;
         margin: auto;
-        padding: 60px 25px 50px;
+        padding-top: 60px;
     }
 
     .c-header-box .error-message {

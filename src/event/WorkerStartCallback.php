@@ -46,7 +46,6 @@ class WorkerStartCallback
 
     public static function onWorkerStart($server, int $workerId)
     {
-        Eazy::info(__FUNCTION__);
         Eazy::$container = new Di();
         Eazy::setAlias('@eazy', dirname(__DIR__));
         try {
@@ -99,23 +98,16 @@ class WorkerStartCallback
 
     private static function bootstrapComponet()
     {
-        Eazy::info(__FUNCTION__);
         if (!isset(self::$_config['bootstrap'])) {
             self::$_config['bootstrap'] = [];
         }
 
         $bootstrap = array_unique(array_merge(self::BOOTSTRAP_COMPONENTS, self::$_config['bootstrap']));
-        Eazy::info('info');
-        var_dump($bootstrap);
         foreach ($bootstrap as $component) {
             if (!isset(self::$_config['components'][$component])) {
-                echo 'throw' . PHP_EOL;
                 throw new InvalidConfigException("Invalid component id:{$component}");
             }
-            echo 'set' . PHP_EOL;
             Eazy::$container->set($component, self::$_config['components'][$component]);
-            var_dump(Eazy::$container);
-            echo 'set ok' . PHP_EOL;
         }
     }
 }
