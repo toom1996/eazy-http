@@ -110,9 +110,12 @@ class WorkerStartCallback
         var_dump(self::$_config);
         foreach ($bootstrap as $component) {
             if (!isset(self::$_config['components'][$component])) {
+                echo 'throw' . PHP_EOL;
                 throw new InvalidConfigException("Invalid component id:{$component}");
             }
+            echo 'set' . PHP_EOL;
             Eazy::$container->set($component, self::$_config['components'][$component]);
+            echo 'set ok' . PHP_EOL;
         }
     }
 }
