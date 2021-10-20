@@ -107,7 +107,6 @@ class WorkerStartCallback
         $bootstrap = array_unique(array_merge(self::BOOTSTRAP_COMPONENTS, self::$_config['bootstrap']));
         Eazy::info('info');
         var_dump($bootstrap);
-        var_dump(self::$_config);
         foreach ($bootstrap as $component) {
             if (!isset(self::$_config['components'][$component])) {
                 echo 'throw' . PHP_EOL;
@@ -115,6 +114,7 @@ class WorkerStartCallback
             }
             echo 'set' . PHP_EOL;
             Eazy::$container->set($component, self::$_config['components'][$component]);
+            var_dump(Eazy::$container);
             echo 'set ok' . PHP_EOL;
         }
     }
