@@ -20,12 +20,12 @@ class InstallCommand extends BaseCommand
      * {@inheritdoc }
      */
     protected string $name = 'http:install';
-    
+
     /**
      * {@inheritdoc }
      */
     protected string $description = 'Generate base code for run http server when you run first.';
-    
+
     /**
      * {@inheritdoc }
      */
@@ -35,7 +35,7 @@ class InstallCommand extends BaseCommand
 
     /**
      * Install file path.
-     * @var string 
+     * @var string
      */
     private string $installPath;
 
@@ -51,7 +51,7 @@ class InstallCommand extends BaseCommand
             $output->writeln("<error>The Swoole PHP extension is required by Eazy. Please see: https://wiki.swoole.com/#/environment to install swoole extension.</error>");
             return 0;
         }
-        
+
         $helper = $this->getHelper('question');
         $question = new Question("<comment>Does this command overwrite the modified code, or execute it? (y/n)</comment>  ", 'y');
         $answer = $helper->ask($input, $output, $question);
@@ -136,7 +136,22 @@ class InstallCommand extends BaseCommand
                 ],
                 'components' => [
                     'urlManager' => [
-                        'class' => \eazy\http\components\UrlManager::class
+                        'class' => \eazy\http\components\UrlManager::class,
+                        'route' => [
+                            // Basic usage.
+                            ['GET', '/', '@controllers/site/index'],
+
+                            // Multiple request methods.
+                            [['POST', 'DELETE'], '/site/methods', '@controllers/site/methods'],
+                            // set different routes to point to the same action.
+                            [['GET', 'POST'], '/about.html', '@controllers/site/methods'],
+
+                            // Group route.
+                            '/site' => [
+                                // set different routes to point to the same action.
+                                [['GET', 'POST'], '/index.html', '@controllers/site/methods']
+                            ],
+                        ]
                     ]
                 ],
             ]
@@ -180,7 +195,7 @@ class SiteController
     {
         $this->generateLayout();
         $viewFile = $this->installPath . '/views/index.php';
-        
+
         $this->saveFile($viewFile, "<?php\necho'hello eazy!';");
     }
 
@@ -190,7 +205,7 @@ class SiteController
     private function generateLayout()
     {
         $layoutFile = $this->installPath . '/views/layouts/main.php';
-        
+
         $this->saveFile($layoutFile, '<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -205,7 +220,7 @@ class SiteController
 </body>
 </html>
 '
-);
+        );
     }
 
     private function generateRuntimeDirectory()
