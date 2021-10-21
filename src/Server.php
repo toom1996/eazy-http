@@ -13,53 +13,57 @@ use Swoole\http\Server as swooleServer;
 
 class Server extends BaseObject
 {
-    const HTTP_EVENT = [
-        SwooleEvent::SWOOLE_ON_START => [StartCallback::class, 'onStart'],
-        SwooleEvent::SWOOLE_ON_REQUEST => [RequestCallback::class, 'onRequest'],
-        SwooleEvent::SWOOLE_ON_WORKER_START => [WorkerStartCallback::class, 'onWorkerStart'],
-        SwooleEvent::SWOOLE_ON_WORKER_ERROR => [WorkerErrorCallback::class, 'onWorkerError'],
-    ];
 
     /**
      * Server host.
      * @var string
      */
-    public string $host;
+    protected string $host;
 
-    /**
-     * Server port.
-     * @var int
-     */
-    public int $port;
-
-    /**
-     * Server setting.
-     * @var array
-     */
-    public array $setting = [];
-
-    /**
-     * Server event.
-     * @var array
-     */
-    public array $event = [];
-
-    public function init()
-    {
-        $this->server = new swooleServer($this->host, $this->port);
-        $this->server->set($this->setting);
-        $this->event = array_merge($this->event, self::HTTP_EVENT);
-        foreach ($this->event as $event => $callback) {
-            $this->server->on($event, $callback);
-        }
-        parent::init();
-    }
-
-    /**
-     * Run swoole http server.
-     */
-    public function run()
-    {
-        $this->server->start();
-    }
+//    /**
+//     * Server port.
+//     * @var int
+//     */
+//    public int $port;
+//
+//    /**
+//     * Server setting.
+//     * @var array
+//     */
+//    public array $setting = [];
+//
+//    public $type;
+//
+//    /**
+//     * Server event.
+//     * @var array
+//     */
+//    public array $callbacks = [];
+//
+//    public function init()
+//    {
+//        $this->server = new swooleServer($this->host, $this->port);
+//        $this->server->set($this->setting);
+//        $this->event = array_merge($this->event, self::HTTP_EVENT);
+//        foreach ($this->event as $event => $callback) {
+//            $this->server->on($event, $callback);
+//        }
+//        parent::init();
+//    }
+//
+//    /**
+//     * Run swoole http server.
+//     */
+//    public function run()
+//    {
+//        $this->server->start();
+//    }
+//
+//    protected function getServer()
+//    {
+//        switch ($this->type) {
+//            case self::SWOOLE_HTTP_SERVER :
+//                $this->server = 
+//        }
+//    }
 }
