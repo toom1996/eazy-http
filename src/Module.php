@@ -11,14 +11,13 @@ class Module extends ServiceLocator
 
     public function runAction($path)
     {
-        var_dump($path);
         // If is register
         if (isset(App::$get->getUrlManager()->controllerMap[$path])) {
             $controller = App::$get->getUrlManager()->controllerMap[$path];
         }else{
             $controller = App::$get->getUrlManager()->setControllerMap($path);
         }
-        var_dump($controller);
+
         $controller = Eazy::createObject($controller);
         if (is_object($controller) && $controller instanceof Controller) {
             return call_user_func([$controller, $controller->action]);

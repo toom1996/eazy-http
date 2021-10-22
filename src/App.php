@@ -47,7 +47,6 @@ class App extends Module
 
     public function run()
     {
-//        var_dump($this->getComponet('urlManager'));
         try {
             $this->handleRequest($this->getRequest())
                 ->send();

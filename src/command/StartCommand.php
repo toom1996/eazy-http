@@ -7,16 +7,14 @@ use eazy\Eazy;
 use eazy\http\Bootstrap;
 use eazy\http\event\StartCallback;
 use eazy\http\event\SwooleEvent;
-use eazy\http\Server;
 use Swoole\FastCGI;
 use Swoole\Process;
+use Swoole\Process as SwooleProcess;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Swoole\Process as SwooleProcess;
-use function Co\run;
 
 class StartCommand extends BaseCommand
 {
@@ -52,15 +50,17 @@ class StartCommand extends BaseCommand
         }
 
         $inputServer = explode(',', $inputServer);
-        foreach ($serverConfigs as $serverConfig) {
-            $serverConfig['setting']['daemonize'] = $input->getOption('daemonize');
-            if (is_array($server) && isset($serverConfig['name']) && in_array($serverConfig['name'], $server)) {
-                $process = new SwooleProcess(function (\Swoole\Process $childProcess) use ($serverConfig) {
-                    $server = new Server($serverConfig);
+
+        foreach ($inputServer as $name) {
+            $config = \server("servers.{$name}");
+            if ($config) {
+                $process = new SwooleProcess(function (\Swoole\Process $childProcess) use ($config) {
+                    $type = $config['type'];
+                    $server = new $type($config);
                     $server->run();
                 });
                 $process->start(); // 启动子进程
-                $output->writeln("<info>Server#{$serverConfig['name']} start.</info>");
+                $output->writeln("<info>Server#{$name} start.</info>");
                 Process::wait();
             }
         }
@@ -75,12 +75,11 @@ class StartCommand extends BaseCommand
     protected function renderServerTable(OutputInterface $output)
     {
         $table = new Table($output);
-        $table->setHeaders(['name', 'port', 'notes', 'status']);
+        $table->setHeaders(['name', 'host:port', 'notes', 'status']);
         $servers = \server('servers');
         foreach ($servers as $name => $server) {
-            $this->getServerRunStatus($name);
             $table->addRows([
-                [$name, $server['port'], $server['note'] ?? '', '<comment>stop</comment>']
+                [$name, "{$server['host']}:{$server['port']}", $server['note'] ?? '', $this->getServerRunStatus($name)]
             ]);
         }
         $table->render();
@@ -88,20 +87,25 @@ class StartCommand extends BaseCommand
 
     protected function getServerRunStatus($name)
     {
-        $servers = @file_get_contents(\server("servers.{$name}.settings.pid_file") ?? '/dev/null');
-        if (!$servers) {
-            $process = new Process(function(\Swoole\Process $worker) {
-//                exec('ps -ef | grep entrypoint |grep -v grep | awk \'{print $2}\'', $return);
-                $worker->exec('/bin/sh', array('-c', 'ps -ef | grep entrypoint |grep -v grep | awk \'{print $2}\''));
-            }, true, 1, true);
-            $process->start();
-            Process::wait();
-
-            run(function() use($process) {
-                $socket = $process->exportSocket();
-                var_dump($socket->recv());
-                echo "from exec: " . $socket->recv() . "\n";
-            });
+        $pidFile = server("servers.{$name}.settings.pid_file");
+        $serverPid = 0;
+        if (\server("servers.{$name}.settings.pid_file")) {
+            $serverPid = file_get_contents($pidFile);
+        }else{
+            $pidFile = config('aliases.@runtime') . "/{$name}.pid";
+            if (file_exists(config('aliases.@runtime') . "/{$name}.pid")) {
+                $serverPid = file_get_contents($pidFile);
+            }
         }
+
+        if (!$serverPid) {
+            return  '<error>unknown</error>';
+        }
+
+        if (!Process::kill($serverPid, 0)) {
+            return '<comment>stop</comment>';
+        }
+
+        return "<info>running</info> ($serverPid)";
     }
 }
