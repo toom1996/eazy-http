@@ -13,12 +13,7 @@ use eazy\http\components\Response;
 use eazy\http\components\UrlManager;
 use eazy\http\components\View;
 use eazy\http\exceptions\InvalidConfigException;
-use toom1996\base\Exception;
-use toom1996\base\Stdout;
-use toom1996\di\Container;
-use toom1996\helpers\ConsoleHelper;
-use toom1996\Launcher;
-use toom1996\log\LogDispatcher;
+use eazy\http\log\LogDispatcher;
 
 /**
  *
@@ -37,11 +32,12 @@ class WorkerStartCallback
         'urlManager' => ['class' => UrlManager::class],
         'view' => ['class' => View::class],
         'assetManager' => ['class' => AssetManager::class],
-//        'log' => ['class' => LogDispatcher::class],
+        'log' => ['class' => LogDispatcher::class],
     ];
 
     const BOOTSTRAP_COMPONENTS = [
         'urlManager',
+        'log',
     ];
 
     public static function onWorkerStart($server, int $workerId)
@@ -50,18 +46,18 @@ class WorkerStartCallback
         Eazy::setAlias('@eazy', dirname(__DIR__));
         try {
             $config = include APP_CONFIG;
-            if (!isset($config[Bootstrap::$packageName]['config'])) {
+            if (!isset($config[Bootstrap::$packageName])) {
                 throw new InvalidConfigException("Unable to determine the eazy-http config.");
             }
-            self::$_config = $config[Bootstrap::$packageName]['config'];
-
+            self::$_config = $config[Bootstrap::$packageName];
             self::initConfigure();
             // bootstrap components.
             self::bootstrapComponet();
 
             swoole_set_process_name($server->taskworker ? "TaskWorker#{$workerId}" :"Worker#{$workerId}");
         }catch (\Throwable $exception) {
-            var_dump($exception);
+            var_dump($exception->getTraceAsString());
+            var_dump($exception->getLine());
             Eazy::error($exception->getMessage());
             exit($exception->getCode());
         }
@@ -109,5 +105,6 @@ class WorkerStartCallback
             }
             Eazy::$container->set($component, self::$_config['components'][$component]);
         }
+        var_dump(Eazy::$container);
     }
 }

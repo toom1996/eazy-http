@@ -11,7 +11,7 @@ class Request extends BaseObject
      * Request path
      * @var
      */
-    private $_pathInfo;
+    private ?string $_pathInfo = null;
 
     /**
      * Query Params
@@ -50,7 +50,7 @@ class Request extends BaseObject
     public $cookie;
 
     /**
-     * Swoole request $_GET
+     * Swoole request get.
      * @var
      */
     public $get;
@@ -62,7 +62,7 @@ class Request extends BaseObject
     public $files;
 
     /**
-     * Swoole request $_POST
+     * Swoole request post.
      * @var
      */
     public $post;
@@ -79,36 +79,31 @@ class Request extends BaseObject
      */
     private $_method;
 
-    
+    /**
+     * Resolove current request.
+     * @return array
+     * @throws \eazy\http\exceptions\NotFoundHttpException
+     */
     public function resolve()
     {
         [$handler, $param] = App::$get->getUrlManager()->parseRequest();
-        return [$handler, array_merge($this->getQueryParams(), $param)];
+        $this->setQueryParams($param + $this->getQueryParams());
+        return [$handler, $this->getQueryParams()];
     }
 
 
     /**
      * Returns the path info of the currently requested URL.
-     * A path info refers to the part that is after the entry script and before the question mark (query string).
-     * The starting and ending slashes are both removed.
-     * @return string part of the request URL that is after the entry script and before the question mark.
-     * Note, the returned path info is already URL-decoded.
-     * @throws InvalidConfigException if the path info cannot be determined due to unexpected server configuration
+     * @return mixed
      */
     public function getPathInfo()
     {
-        if ($this->_pathInfo === null) {
-            $this->_pathInfo = $this->server['path_info'];
-        }
-
-        return $this->_pathInfo;
+        return $this->server['path_info'] ?? '';
     }
 
     /**
      * Resolves the request URI portion for the currently requested URL.
-     * @return string|bool the request URI portion for the currently requested URL.
-     * Note that the URI returned may be URL-encoded depending on the client.
-     * @throws InvalidConfigException if the request URI cannot be determined due to unusual server configuration
+     * @return mixed|string|string[]|null
      */
     public function getUrl()
     {
@@ -120,20 +115,12 @@ class Request extends BaseObject
     }
 
     /**
-     * Returns the request parameters given in the [[queryString]].
-     *
-     * This method will return the contents of
-     * This method will return the contents of swoole `$_GET` if params where not explicitly set.
-     * @return array the request GET parameter values.
-     * @see setQueryParams()
+     * Return all query params.
+     * @return array
      */
-    public function getQueryParams()
+    private function getQueryParams(): array
     {
-        if ($this->_queryParams === null) {
-            return $this->get ?? [];
-        }
-
-        return $this->_queryParams;
+        return $this->get ?? [];
     }
 
     /**
@@ -148,8 +135,7 @@ class Request extends BaseObject
     }
 
     /**
-     * Returns GET parameter with a given name. If name isn't specified, returns an array of all GET parameters.
-     *
+     * Merge uri parameter and `GET` parameter and returns  parameter with a given name. If name isn't specified, returns all parameters.
      * @param string $name the parameter name
      * @param mixed $defaultValue the default parameter value if the parameter does not exist.
      * @return array|mixed
@@ -171,10 +157,22 @@ class Request extends BaseObject
      * @return mixed the GET parameter value
      * @see getBodyParam()
      */
-    public function getQueryParam($name, $defaultValue = null)
+    private function getQueryParam($name, $defaultValue = null)
     {
         $params = $this->getQueryParams();
 
         return isset($params[$name]) ? $params[$name] : $defaultValue;
+    }
+
+
+    /**
+     * Sets the request [[queryString]] parameters.
+     * @param array $values the request query parameters (name-value pairs)
+     * @see getQueryParam()
+     * @see getQueryParams()
+     */
+    private function setQueryParams($values)
+    {
+        $this->get = $values;
     }
 }

@@ -10,9 +10,6 @@ use Symfony\Component\Console\Tester\TesterTrait;
  * Class App
  * @property  \eazy\http\components\Request $request
  * @property  \eazy\http\components\Response $response
- *
- * @author TOOM <1023150697@qq.com>
- * 
  */
 class App extends Module
 {
@@ -33,18 +30,16 @@ class App extends Module
      */
     public function __construct(\Swoole\Http\Request $request, \Swoole\Http\Response $response)
     {
-//        $response->detach();
-        $this->request = $request;
-//        $this->response = $response;
+        $this->set('request', $request);
         self::$get = &$this;
     }
 
-    public function __destruct()
-    {
-//        echo 'd';
-        // TODO: Implement __destruct() method.
-    }
-
+    /**
+     * Run application.
+     * @throws \ReflectionException
+     * @throws \eazy\http\exceptions\InvalidConfigException
+     * @throws \eazy\http\exceptions\UnknownClassException
+     */
     public function run()
     {
         try {
@@ -57,70 +52,13 @@ class App extends Module
         } finally {
             $this->getResponse()->send();
         }
-//        $this->getLog()->flush();
+        $this->getLog()->flush();
         self::$get = null;
     }
 
-    public static function getComponent()
-    {
-        return self::$get;
-    }
-
     /**
-     * @return \eazy\http\components\Request
-     */
-    public function getRequest()
-    {
-        return $this->get('request');
-    }
-
-    /**
-     * @return \eazy\http\components\UrlManager
-     */
-    public function getUrlManager()
-    {
-        return $this->get('urlManager');
-    }
-
-    /**
-     * @return \eazy\http\components\Response
-     */
-    public function getResponse()
-    {
-        if (!$this->has('response')) {
-            $this->set('response');
-        }
-
-        return $this->get('response');
-    }
-
-    /**
-     * @return \eazy\http\components\View
-     */
-    public function getView()
-    {
-        if (!$this->has('view')) {
-            $this->set('view');
-        }
-
-        return $this->get('view');
-    }
-
-    /**
-     * @return \eazy\http\components\ErrorHandler
-     */
-    public function getErrorHandler()
-    {
-        if (!$this->has('errorHandler')) {
-            $this->set('errorHandler');
-        }
-
-        return $this->get('errorHandler');
-    }
-
-    /**
+     * Handle request.
      * @param $request \eazy\http\components\Request
-     *
      * @return \eazy\http\components\Response
      */
     public function handleRequest($request)
@@ -134,14 +72,80 @@ class App extends Module
 
         return $response;
     }
-    
-    public function setRequest(\Swoole\Http\Request $request)
+
+    /**
+     * Get request component.
+     * @return \eazy\http\components\Request
+     */
+    public function getRequest()
     {
-        $this->set('request', $request);
+        return $this->get('request');
     }
 
-    public function setResponse(\Swoole\Http\Response $response)
+    /**
+     * Get log component.
+     * @return \eazy\http\log\LogDispatcher
+     */
+    public function getLog()
     {
-        $this->set('response', $response);
+        return $this->get('log');
+    }
+
+    /**
+     * Get urlManager component.
+     * @return \eazy\http\components\UrlManager
+     */
+    public function getUrlManager()
+    {
+        return $this->get('urlManager');
+    }
+
+    /**
+     * Get response component.
+     * @return \eazy\http\components\Response
+     */
+    public function getResponse()
+    {
+        if (!$this->has('response')) {
+            $this->set('response');
+        }
+
+        return $this->get('response');
+    }
+
+    /**
+     * Get view component.
+     * @return \eazy\http\components\View
+     */
+    public function getView()
+    {
+        if (!$this->has('view')) {
+            $this->set('view');
+        }
+
+        return $this->get('view');
+    }
+
+    /**
+     * Get errorHandler component.
+     * @return \eazy\http\components\ErrorHandler
+     */
+    public function getErrorHandler()
+    {
+        if (!$this->has('errorHandler')) {
+            $this->set('errorHandler');
+        }
+
+        return $this->get('errorHandler');
+    }
+
+    /**
+     * Quickly get the log component method.
+     * Same as `getLog` method.
+     * @return \eazy\http\log\LogDispatcher
+     */
+    public static function log()
+    {
+        return self::$get->getLog();
     }
 }
