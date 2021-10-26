@@ -15,9 +15,6 @@ use eazy\http\components\View;
 use eazy\http\exceptions\InvalidConfigException;
 use eazy\http\log\LogDispatcher;
 
-/**
- *
- */
 spl_autoload_register(['eazy\Eazy', 'autoload'], true, true);
 
 class WorkerStartCallback
@@ -40,6 +37,11 @@ class WorkerStartCallback
         'log',
     ];
 
+    /**
+     * 
+     * @param       $server
+     * @param  int  $workerId
+     */
     public static function onWorkerStart($server, int $workerId)
     {
         Eazy::$container = new Di();
