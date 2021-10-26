@@ -14,12 +14,6 @@ class Request extends BaseObject
     private ?string $_pathInfo = null;
 
     /**
-     * Query Params
-     * @var
-     */
-    private $_queryParams;
-
-    /**
      * Swoole fd
      * @var
      */
@@ -74,12 +68,6 @@ class Request extends BaseObject
     public $tmpfiles;
 
     /**
-     * Request method.
-     * @var
-     */
-    private $_method;
-
-    /**
      * Resolove current request.
      * @return array
      * @throws \eazy\http\exceptions\NotFoundHttpException
@@ -91,12 +79,11 @@ class Request extends BaseObject
         return [$handler, $this->getQueryParams()];
     }
 
-
     /**
      * Returns the path info of the currently requested URL.
      * @return mixed
      */
-    public function getPathInfo()
+    public function getPathInfo(): string
     {
         return $this->server['path_info'] ?? '';
     }
@@ -124,9 +111,7 @@ class Request extends BaseObject
     }
 
     /**
-     * Returns the request method given in the [[method]].
-     *
-     * Thid method will return the conentes of swoole `server['request_method']` if params where not explicitly set.
+     * Returns the conentes of swoole `server['request_method']`.
      * @return mixed
      */
     public function getMethod()
