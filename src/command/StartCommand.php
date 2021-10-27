@@ -53,12 +53,16 @@ class StartCommand extends BaseCommand
 
         foreach ($inputServer as $name) {
             $config = \server("servers.{$name}");
-            if (!$config) {
-                $output->writeln("<error>Server#{$name} not exist.</error>");
-                continue;
+            if ($config) {
+                $process = new SwooleProcess(function (\Swoole\Process $childProcess) use ($config) {
+                    $type = $config['type'];
+                    $server = new $type($config);
+                    $server->run();
+                });
+                $process->start(); // 启动子进程
+                $output->writeln("<info>Server#{$name} start.</info>");
+                Process::wait();
             }
-            $this->startServer($config, $name);
-            $output->writeln("<info>Server#{$name} start.</info>");
         }
 
         return 0;
@@ -94,17 +98,14 @@ class StartCommand extends BaseCommand
             }
         }
 
-        return !Process::kill($serverPid, 0) ? '<comment>stop</comment>' : "<info>running</info> ($serverPid)";
-    }
+        if (!$serverPid) {
+            return  '<error>unknown</error>';
+        }
 
-    private function startServer($config, $name)
-    {
-        $process = new SwooleProcess(function (\Swoole\Process $childProcess) use ($config, $name) {
-            $type = $config['type'];
-            $server = new $type($config);
-            $server->run($name);
-        });
-        $process->start();
-        Process::wait();
+        if (!Process::kill($serverPid, 0)) {
+            return '<comment>stop</comment>';
+        }
+
+        return "<info>running</info> ($serverPid)";
     }
 }

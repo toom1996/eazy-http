@@ -13,8 +13,12 @@ use eazy\http\components\Response;
 use eazy\http\components\UrlManager;
 use eazy\http\components\View;
 use eazy\http\exceptions\InvalidConfigException;
+use eazy\http\Log;
 use eazy\http\log\LogDispatcher;
 
+/**
+ *
+ */
 spl_autoload_register(['eazy\Eazy', 'autoload'], true, true);
 
 class WorkerStartCallback
@@ -37,14 +41,12 @@ class WorkerStartCallback
         'log',
     ];
 
-    /**
-     * 
-     * @param       $server
-     * @param  int  $workerId
-     */
     public static function onWorkerStart($server, int $workerId)
     {
         Eazy::$container = new Di();
+        Eazy::$container->set('request', [
+            'class' => \eazy\http\Request::class
+        ]);
         Eazy::setAlias('@eazy', dirname(__DIR__));
         try {
             $config = include APP_CONFIG;
@@ -107,6 +109,5 @@ class WorkerStartCallback
             }
             Eazy::$container->set($component, self::$_config['components'][$component]);
         }
-        var_dump(Eazy::$container);
     }
 }

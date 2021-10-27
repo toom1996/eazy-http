@@ -4,6 +4,7 @@
 namespace eazy\http\event;
 
 
+use Co\Context;
 use DI\Container;
 use eazy\Eazy;
 use eazy\http\App;
@@ -19,7 +20,12 @@ class RequestCallback
 
     public static function onRequest(Request $request, Response $response)
     {
-//        $response->end(123);
-        (new App($request, $response))->run();
+        \eazy\http\Context::put('request', $request);
+//        \eazy\http\Context::delete('request');
+        echo '@@';
+        var_dump(Eazy::$container->get('request')->queryString());
+        $response->end(\eazy\http\Context::get('request')->server['query_string']);
+        echo 'unset';
+//        (new App($request, $response))->run();
     }
 }
