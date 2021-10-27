@@ -3,11 +3,14 @@
 namespace eazy\http;
 
 use eazy\helpers\BaseArrayHelper;
+use eazy\http\base\BaseComponent;
 
-class Request {
+class Request extends BaseComponent {
 
-    public function __construct()
+    
+    protected function getContext()
     {
+        return Context::get('request');
     }
 
     public function fd()
@@ -15,13 +18,14 @@ class Request {
         
     }
     
-    public function get()
+    public function get($name = '', $default = null)
     {
-        return \eazy\http\Context::get('request');
+        $key = $name ? ".{$name}" : '';
+        return $this->getValue($this->getContext(), "get{$key}", $default);
     }
 
-    public function queryString()
+    public function queryString($default = null)
     {
-        return $this->get()->server['query_string'];
+        return $this->getValue($this->getContext(), 'server.query_string', $default);
     }
 }

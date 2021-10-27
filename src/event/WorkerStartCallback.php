@@ -47,6 +47,9 @@ class WorkerStartCallback
         Eazy::$container->set('request', [
             'class' => \eazy\http\Request::class
         ]);
+        Eazy::$container->set('response', [
+            'class' => \eazy\http\Response::class
+        ]);
         Eazy::setAlias('@eazy', dirname(__DIR__));
         try {
             $config = include APP_CONFIG;
