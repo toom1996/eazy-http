@@ -12,6 +12,7 @@ use eazy\http\components\Request;
 use eazy\http\components\Response;
 use eazy\http\components\UrlManager;
 use eazy\http\components\View;
+use eazy\http\di\Container;
 use eazy\http\exceptions\InvalidConfigException;
 use eazy\http\Log;
 use eazy\http\log\LogDispatcher;
@@ -23,7 +24,6 @@ spl_autoload_register(['eazy\Eazy', 'autoload'], true, true);
 
 class WorkerStartCallback
 {
-
     private static $_config;
 
     const CORE_COMPONENTS = [
@@ -37,8 +37,7 @@ class WorkerStartCallback
     ];
 
     const BOOTSTRAP_COMPONENTS = [
-        'urlManager',
-        'log',
+//        'request' => \eazy\http\Request::class
     ];
 
     public static function onWorkerStart($server, int $workerId)
@@ -47,6 +46,15 @@ class WorkerStartCallback
         Eazy::$container->set('request', [
             'class' => \eazy\http\Request::class
         ]);
+        Eazy::$container->set('response', [
+            'class' => \eazy\http\Response::class
+        ]);
+
+        Eazy::$container->set('router', [
+            'class' => \eazy\http\Router::class
+        ]);
+        Container::$instance->set();
+        
         Eazy::setAlias('@eazy', dirname(__DIR__));
         try {
             $config = include APP_CONFIG;

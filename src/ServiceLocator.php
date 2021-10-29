@@ -6,6 +6,9 @@ use eazy\base\BaseObject;
 use eazy\Eazy;
 use eazy\http\exceptions\InvalidConfigException;
 
+/**
+ * @property \eazy\http\Request $request
+ */
 class ServiceLocator extends Component
 {
 

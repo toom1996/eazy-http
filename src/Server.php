@@ -48,9 +48,8 @@ class Server extends BaseObject
     /**
      * Run swoole http server.
      */
-    public function run(string $name)
+    public function run()
     {
-        $this->server->name = $name;
         $this->server->start();
     }
 }

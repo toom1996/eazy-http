@@ -8,7 +8,7 @@ class Context
 {
     protected static $pool = [];
 
-    static function get($key)
+    static function get($key):mixed
     {
         $cid = Coroutine::getuid();
         if ($cid < 0)

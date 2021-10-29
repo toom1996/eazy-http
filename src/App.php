@@ -2,6 +2,7 @@
 
 namespace eazy\http;
 
+use eazy\di\Di;
 use eazy\Eazy;
 use eazy\http\base\BaseApp;
 use Swoole\Http\Request;
@@ -24,6 +25,26 @@ class App extends Module
      * @var array
      */
     public static $config;
+
+    /**
+     * 
+     * @return \eazy\http\Request
+     * @throws exceptions\InvalidConfigException
+     */
+    public static function getRequest()
+    {
+        return Di::$container->get('request');
+    }
+
+    /**
+     *
+     * @return \eazy\http\Response
+     * @throws exceptions\InvalidConfigException
+     */
+    public static function getResponse()
+    {
+        return Di::$container->get('response');
+    }
 
     /**
      * @param  \Swoole\Http\Request  $request
@@ -80,15 +101,6 @@ class App extends Module
     }
 
     /**
-     * Get request component.
-     * @return \eazy\http\components\Request
-     */
-    public function getRequest()
-    {
-        return $this->get('request');
-    }
-
-    /**
      * Get log component.
      * @return \eazy\http\log\LogDispatcher
      */
@@ -104,19 +116,6 @@ class App extends Module
     public function getUrlManager()
     {
         return $this->get('urlManager');
-    }
-
-    /**
-     * Get response component.
-     * @return \eazy\http\components\Response
-     */
-    public function getResponse()
-    {
-        if (!$this->has('response')) {
-            $this->set('response');
-        }
-
-        return $this->get('response');
     }
 
     /**

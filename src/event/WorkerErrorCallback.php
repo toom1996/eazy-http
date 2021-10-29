@@ -14,7 +14,7 @@ use toom1996\log\LogDispatcher;
 
 class WorkerErrorCallback
 {
-    public static function onWorkerError(Swoole\Server $server, int $worker_id, int $worker_pid, int $exit_code, int $signal)
+    public static function onWorkerError($server, int $worker_id, int $worker_pid, int $exit_code, int $signal)
     {
         echo '----------@@@@@@@@@@';
     }
