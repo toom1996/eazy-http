@@ -42,6 +42,12 @@ class WorkerStartCallback
 
     public static function onWorkerStart($server, int $workerId)
     {
+        new Container();
+
+        // bootstrap global component.
+        Container::$instance->set('request', [
+            'class' => \eazy\http\Request::class
+        ]);
         Eazy::$container = new Di();
         Eazy::$container->set('request', [
             'class' => \eazy\http\Request::class

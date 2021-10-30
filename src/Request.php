@@ -9,6 +9,9 @@ use eazy\helpers\BaseArrayHelper;
 use eazy\http\base\BaseComponent;
 use eazy\http\di\Container;
 
+/**
+ * @property string $method
+ */
 class Request extends BaseComponent
 {
     public function fd()
