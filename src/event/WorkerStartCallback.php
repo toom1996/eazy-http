@@ -14,14 +14,12 @@ use eazy\http\components\UrlManager;
 use eazy\http\components\View;
 use eazy\http\di\Container;
 use eazy\http\exceptions\InvalidConfigException;
+use eazy\http\exceptions\UnknownClassException;
+use eazy\http\helpers\FileHelper;
 use eazy\http\Log;
 use eazy\http\log\LogDispatcher;
 
-/**
- *
- */
-spl_autoload_register(['eazy\Eazy', 'autoload'], true, true);
-
+spl_autoload_register(['eazy\http\App','autoload'], true, true);
 class WorkerStartCallback
 {
     private static $_config;
@@ -45,32 +43,33 @@ class WorkerStartCallback
         new Container();
 
         // bootstrap global component.
-        Container::$instance->set('request', [
-            'class' => \eazy\http\Request::class
-        ]);
-        Eazy::$container = new Di();
-        Eazy::$container->set('request', [
-            'class' => \eazy\http\Request::class
-        ]);
-        Eazy::$container->set('response', [
-            'class' => \eazy\http\Response::class
-        ]);
-
-        Eazy::$container->set('router', [
-            'class' => \eazy\http\Router::class
-        ]);
-        Container::$instance->set();
+//        Container::$instance->set('request', [
+//            'class' => \eazy\http\Request::class
+//        ]);
+//        Eazy::$container = new Di();
+//        Eazy::$container->set('request', [
+//            'class' => \eazy\http\Request::class
+//        ]);
+//        Eazy::$container->set('response', [
+//            'class' => \eazy\http\Response::class
+//        ]);
+//
+//        Eazy::$container->set('router', [
+//            'class' => \eazy\http\Router::class
+//        ]);
+//        Container::$instance->set();
         
         Eazy::setAlias('@eazy', dirname(__DIR__));
         try {
-            $config = include APP_CONFIG;
-            if (!isset($config[Bootstrap::$packageName])) {
-                throw new InvalidConfigException("Unable to determine the eazy-http config.");
-            }
-            self::$_config = $config[Bootstrap::$packageName];
-            self::initConfigure();
+            self::bootstrap($server->configPath);
+            var_dump(Container::$instance);
+//            if (!isset($config[Bootstrap::$packageName])) {
+//                throw new InvalidConfigException("Unable to determine the eazy-http config.");
+//            }
+//            self::$_config = $config[Bootstrap::$packageName];
+//            self::initConfigure();
             // bootstrap components.
-            self::bootstrapComponet();
+//            self::bootstrapComponet();
 
             swoole_set_process_name($server->taskworker ? "TaskWorker#{$workerId}" :"Worker#{$workerId}");
         }catch (\Throwable $exception) {
@@ -81,6 +80,34 @@ class WorkerStartCallback
         }
     }
 
+    /**
+     * Parse config.
+     * @param $configPath
+     *
+     * @throws \eazy\http\exceptions\InvalidConfigException
+     */
+    private static function bootstrap($configPath)
+    {
+        $config = [];
+        if (is_dir($configPath)) {
+            foreach (FileHelper::findFiles($configPath, ['only' => ['*.php']]) as $name => $file) {
+                $config['component'][basename($file, '.php')] = require $file;
+            }
+        }else{
+            $config = require $configPath;
+        }
+
+        // bootstrap component.
+        foreach ($config['component'] as $componentName => $attributes) {
+            if (isset($attributes['bootstrap']) && $attributes['bootstrap'] === true) {
+                Container::$instance->set($componentName, $attributes);
+            }
+        }
+
+        // set aliases.
+        App::setAlias('@controllers', APP_PATH . '/controllers');
+        App::setAlias('@app', APP_PATH);
+    }
 
     public static function initConfigure()
     {
@@ -124,4 +151,7 @@ class WorkerStartCallback
             Eazy::$container->set($component, self::$_config['components'][$component]);
         }
     }
+
+
+
 }

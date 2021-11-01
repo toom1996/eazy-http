@@ -38,6 +38,11 @@ class Server extends BaseObject
     public array $callbacks = [];
 
     /**
+     * @var string
+     */
+    public string $configPath = '';
+
+    /**
      * Initialize server.
      */
     public function init()

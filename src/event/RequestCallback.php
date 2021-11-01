@@ -19,7 +19,7 @@ use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Swoole\Server;
 
-class RequestCallback
+class RequestCallback extends Module
 {
     
     public static function onRequest(Request $request, Response $response)
@@ -59,19 +59,22 @@ class RequestCallback
     public function __invoke(Request $request, Response $response)
     {
         try {
-            [$handler, $params] = App::getRequest()
-                ->setRequest($request)
-                ->resolve();
-            var_dump($handler);
-            var_dump($params);
+            $handler = $this->request->setRequest($request)->resolve();
+            $result = $this->controller->runAction($handler);
+//            var_dump($result);
+//            var_dump($handler);
+//            var_dump($handler);
+//            var_dump($params);
         }catch (\Swoole\ExitException $exception){
-
+            var_dump($exception);
         }catch (\Throwable $exception) {
             var_dump($exception);
         } finally {
 
         }
-        echo __FUNCTION__;
+
+        \eazy\http\Context::delete();
+//        echo __FUNCTION__;
     }
 
     public function emit()

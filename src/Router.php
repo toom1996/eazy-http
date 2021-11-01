@@ -5,6 +5,7 @@ namespace eazy\http;
 use eazy\Eazy;
 use eazy\helpers\BaseFileHelper;
 use eazy\http\base\BaseComponent;
+use eazy\http\di\Container;
 use eazy\http\exceptions\NotFoundHttpException;
 use eazy\http\exceptions\UnknownClassException;
 use FastRoute\Dispatcher;
@@ -16,9 +17,7 @@ class Router extends BaseComponent
 {
     private $_adapter;
 
-    public $route = [
-        ['GET', '/', '@controllers/site/index'],
-    ];
+    public $route;
     
     public function init()
     {
@@ -83,7 +82,7 @@ class Router extends BaseComponent
     
     public function matchRoute()
     {
-        $request = App::getRequest();
+        $request = Container::$instance->get('request');
         $httpMethod = $request->getMethod();
         $uri = $request->getUri();
         if (false !== $pos = strpos($uri, '?')) {

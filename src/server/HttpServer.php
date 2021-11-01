@@ -19,6 +19,7 @@ class HttpServer extends Server
     {
         $this->server = new \Swoole\Http\Server($this->host, $this->port, \server('mode'), SWOOLE_SOCK_TCP);
         $this->server->set($this->settings);
+        $this->server->configPath = $this->configPath;
         foreach ($this->callbacks as $event => $callback) {
             $this->server->on($event, $callback);
         }

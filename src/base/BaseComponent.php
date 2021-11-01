@@ -2,24 +2,22 @@
 
 namespace eazy\http\base;
 
+use eazy\base\BaseObject;
 use eazy\helpers\BaseArrayHelper;
 use eazy\http\Context;
 use eazy\http\exceptions\InvalidConfigException;
 use eazy\http\exceptions\UnknownClassException;
 
 /**
- * @property mixed $context
  * @property integer $objectId
  */
-abstract class BaseComponent
+class BaseComponent extends BaseObject
 {
-
-    public function __construct()
-    {
-        $this->init();
-    }
-    
-    public function init(){}
+    /**
+     * Is bootstrap component.
+     * @var
+     */
+    public bool $bootstrap = false;
 
     public function __set($name, $value)
     {
@@ -51,11 +49,7 @@ abstract class BaseComponent
 
         throw new UnknownClassException('Getting unknown property: ' . get_class($this) . '::' . $name);
     }
-
-    protected function getContext(): mixed
-    {
-        return Context::get($this->getObjectId());
-    }
+    
     
     protected function getValue($array, $key, $default = null)
     {

@@ -12,7 +12,7 @@ use eazy\http\di\Container;
 /**
  * @property string $method
  */
-class Request extends BaseComponent
+class Request extends ContextComponent
 {
     public function fd()
     {
@@ -73,9 +73,8 @@ class Request extends BaseComponent
     
     public function resolve()
     {
-        Container::$instance->get(Router::class);
-        [$handler, $param] = Eazy::$container->get('router')->parseRequest();
-        return [$handler, $param];
+        [$handler, $param] = Container::$instance->get('router')->parseRequest();
+        return $handler;
     }
     
     public function setRequest(\Swoole\Http\Request $request)

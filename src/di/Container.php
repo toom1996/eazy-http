@@ -3,6 +3,7 @@
 namespace eazy\http\di;
 
 use eazy\base\BaseObject;
+use eazy\http\App;
 use eazy\http\exceptions\InvalidConfigException;
 use eazy\http\Request;
 use Psr\Container\ContainerInterface;
@@ -48,8 +49,7 @@ class Container extends BaseObject implements ContainerInterface
     public function set($class, $definition = [])
     {
         $definition = $this->normalizeDefinition($class, $definition);
-        $this->build($class, $definition);
-        $this->_singletons[$class] = $this->build($class, $definition);
+        $this->_singletons[$class] = App::createObject($definition);
     }
 
     /**
@@ -58,7 +58,7 @@ class Container extends BaseObject implements ContainerInterface
      * @param  array  $params
      * @param  array  $config
      *
-     * @return mixed|void
+     * @return \eazy\http\Request
      */
     public function get($class, $params = [], $config = [])
     {
@@ -76,18 +76,11 @@ class Container extends BaseObject implements ContainerInterface
      * @return object|void
      * @throws \ReflectionException
      */
-    protected function build($class, $params)
+    protected function build($definition)
     {
-        if(is_array($type) && isset($type['class'])) {
-            $params = $type;
-            $type = $params['class'];
-            unset($params['class']);
-        }
-
-        if (is_string($type)) {
-            $ref = new \ReflectionClass($type);
-            return $ref->newInstanceArgs([$params]);
-        }
+        $ref = new \ReflectionClass($definition['class']);
+        unset($definition['class']);
+        return $ref->newInstanceArgs([$definition]);
     }
 
     /**
@@ -110,5 +103,14 @@ class Container extends BaseObject implements ContainerInterface
             }
             return $definition;
         }
+    }
+
+    public function has(string $id)
+    {
+        if (isset($this->_singletons[$id])) {
+            return true;
+        }
+
+        return false;
     }
 }

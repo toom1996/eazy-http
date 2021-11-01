@@ -4,68 +4,30 @@ namespace eazy\http;
 
 use eazy\base\BaseObject;
 use eazy\Eazy;
+use eazy\http\base\BaseComponent;
+use eazy\http\di\Container;
 use eazy\http\exceptions\InvalidConfigException;
 
 /**
  * @property \eazy\http\Request $request
+ * @property \eazy\http\Controller $controller
  */
-class ServiceLocator extends Component
+class ServiceLocator extends BaseComponent
 {
-
-    private array $_components = [];
-
+    
     public function has(string $id)
     {
-        if ( ! isset($this->_components[$id]) && ! Eazy::$container->get($id)) {
-            return false;
-        }
-
-        return true;
+        return Container::$instance->has($id);
     }
 
     public function get(string $id)
     {
-        if (isset($this->_components[$id])) {
-            return $this->_components[$id];
-        }
-        
-        if (Eazy::$container->has($id)) {
-            return Eazy::$container->get($id);
-        }
-
-        throw new InvalidConfigException("Unknown component ID: {$id}");
-    }
-
-    /**
-     * 实例化组件
-     *
-     * @param  string  $id
-     * @param  null    $definition
-     *
-     * @throws InvalidConfigException
-     */
-    public function set(string $id, $definition = null)
-    {
-        unset($this->_components[$id]);
-        // set('className', array());
-        // set('className', object());
-        if (is_string($id)) {
-            $this->_components[$id] = Eazy::createObject(App::$config['components'][$id]['class'], $definition);
-        }elseif (is_array($definition)) {
-            $this->_components[$id] = Eazy::createObject($definition);
-        }elseif(is_object($definition)){
-            if (isset(App::$config['components'][$id]['class'])) {
-                $this->_components[$id] = Eazy::createObject(App::$config['components'][$id]);
-            }else{
-                $this->_components[$id] = $definition;
-            }
-        }elseif (is_null($definition)) {
-            $this->_components[$id] = Eazy::createObject(App::$config['components'][$id]);
-        }
+        return Container::$instance->get($id);
     }
 
     public function __get(string $name)
     {
+
         if ($this->has($name)) {
             return $this->get($name);
         }
