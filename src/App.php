@@ -12,6 +12,11 @@ use Symfony\Component\Console\Tester\TesterTrait;
 
 class App
 {
+    /**
+     * @var \eazy\http\ServiceLocator
+     */
+    public static $component;
+    
     private static $aliases;
 
 

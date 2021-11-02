@@ -59,21 +59,23 @@ class RequestCallback extends Module
     public function __invoke(Request $request, Response $response)
     {
         try {
-            $handler = $this->request->setRequest($request)->resolve();
+            $this->request->context = $request;
+            $this->response->context = $response;
+            $handler = $this->request->resolve();
             $result = $this->controller->runAction($handler);
-//            var_dump($result);
-//            var_dump($handler);
-//            var_dump($handler);
-//            var_dump($params);
+            if ($result) {
+                $this->response->content = $result;
+            }
+            $this->response->send();
         }catch (\Swoole\ExitException $exception){
-            var_dump($exception);
+            $this->response->content = $exception->getStatus();
         }catch (\Throwable $exception) {
-            var_dump($exception);
+            $this->errorHandler->handleException($e);
         } finally {
-
+            $this->response->send();
+            \eazy\http\Context::delete();
         }
-
-        \eazy\http\Context::delete();
+        
 //        echo __FUNCTION__;
     }
 

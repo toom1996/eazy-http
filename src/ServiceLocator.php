@@ -10,7 +10,10 @@ use eazy\http\exceptions\InvalidConfigException;
 
 /**
  * @property \eazy\http\Request $request
+ * @property \eazy\http\Response $response
+ * @property \eazy\http\components\View $view
  * @property \eazy\http\Controller $controller
+ * @property \eazy\http\components\ErrorHandler $errorHandler
  */
 class ServiceLocator extends BaseComponent
 {

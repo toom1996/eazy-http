@@ -5,6 +5,7 @@ namespace eazy\http\event;
 
 
 use eazy\Eazy;
+use eazy\http\App;
 use toom1996\base\Exception;
 use toom1996\base\Stdout;
 use toom1996\di\Container;

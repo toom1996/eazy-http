@@ -43,4 +43,23 @@ class Context
             }
         }
     }
+
+    public static function setAttributes($key, $value)
+    {
+        $cid = Coroutine::getuid();
+        if ($cid > 0){
+            self::$pool[$cid]['attributes'][$key] = $value;
+        }
+    }
+
+    public static function getAttributes($key = null)
+    {
+        $cid = Coroutine::getuid();
+        if ($key) {
+            return self::$pool[$cid]['attributes'][$key];
+        }
+
+        return self::$pool[$cid]['attributes'];
+    }
+
 }

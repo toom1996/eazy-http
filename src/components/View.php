@@ -3,10 +3,12 @@
 namespace eazy\http\components;
 
 use eazy\Eazy;
+use eazy\http\App;
 use eazy\http\Component;
+use eazy\http\ContextComponent;
 use eazy\http\exceptions\ViewNotFoundException;
 
-class View extends Component
+class View extends ContextComponent
 {
     /**
      * Default render file extension.
@@ -23,31 +25,19 @@ class View extends Component
 
     public $assetBundles = [];
 
-    /**
-     *
-     * @param  string  $view
-     * @param  array   $params
-     *
-     * @return false|string
-     * @throws Throwable
-     */
+    
     public function render(string $view, array $params = [])
     {
         $viewFile = $this->findViewFile($view);
         return $this->renderFile($viewFile, $params);
     }
 
-    /**
-     *
-     * @param $view
-     *
-     * @return bool|string
-     */
+    
     public function findViewFile($view)
     {
         if (strncmp($view, '@', 1) === 0) {
             // e.g. "@app/views/main"
-            $file = Eazy::getAlias($view);
+            $file = App::getAlias($view);
         } elseif (strncmp($view, '/', 1) === 0) {
             // e.g. "/site/index"
             //            if (YiiS::$app->controller !== null) {
@@ -70,18 +60,10 @@ class View extends Component
         return $path;
     }
 
-    /**
-     *
-     * @param $viewFile
-     * @param $params
-     * @param  null  $context
-     *
-     * @return false|string
-     * @throws Throwable
-     */
+   
     public function renderFile($viewFile, $params, $context = null)
     {
-        $viewFile = $requestedFile = Eazy::getAlias($viewFile);
+        $viewFile = $requestedFile = App::getAlias($viewFile);
         if (!is_file($viewFile)) {
             throw new ViewNotFoundException("The view file does not exist: $viewFile");
         }
@@ -103,14 +85,7 @@ class View extends Component
         return $output;
     }
 
-    /**
-     *
-     * @param $_file_
-     * @param  array  $_params_
-     *
-     * @return false|string
-     * @throws Throwable
-     */
+   
     public function renderPhpFile($_file_, $_params_ = [])
     {
         $_obInitialLevel_ = ob_get_level();

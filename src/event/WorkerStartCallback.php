@@ -18,6 +18,7 @@ use eazy\http\exceptions\UnknownClassException;
 use eazy\http\helpers\FileHelper;
 use eazy\http\Log;
 use eazy\http\log\LogDispatcher;
+use eazy\http\ServiceLocator;
 
 spl_autoload_register(['eazy\http\App','autoload'], true, true);
 class WorkerStartCallback
@@ -41,6 +42,7 @@ class WorkerStartCallback
     public static function onWorkerStart($server, int $workerId)
     {
         new Container();
+        App::$component = new ServiceLocator();
 
         // bootstrap global component.
 //        Container::$instance->set('request', [
