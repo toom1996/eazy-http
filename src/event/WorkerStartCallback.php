@@ -61,7 +61,7 @@ class WorkerStartCallback
 //        ]);
 //        Container::$instance->set();
         
-        Eazy::setAlias('@eazy', dirname(__DIR__));
+        App::setAlias('@eazy', dirname(__DIR__));
         try {
             self::bootstrap($server->configPath);
             var_dump(Container::$instance);

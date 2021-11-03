@@ -6,7 +6,7 @@ use Swoole\Coroutine;
 
 class Context
 {
-    protected static $pool = [];
+    public static $pool = [];
 
     static function get($key):mixed
     {
@@ -52,14 +52,10 @@ class Context
         }
     }
 
-    public static function getAttributes($key = null)
+    public static function getAttributes($classId)
     {
         $cid = Coroutine::getuid();
-        if ($key) {
-            return self::$pool[$cid]['attributes'][$key];
-        }
-
-        return self::$pool[$cid]['attributes'];
+        return self::$pool[$cid][$classId]['attributes'] ?? [];
     }
 
 }

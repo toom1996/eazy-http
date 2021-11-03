@@ -5,18 +5,16 @@ namespace eazy\http\components;
 use eazy\http\App;
 use eazy\http\Component;
 use eazy\base\Exception;
+use eazy\http\ContextComponent;
 use eazy\http\exceptions\InvalidConfigException;
 use eazy\http\exceptions\UnknownClassException;
 
-class ErrorHandler extends Component
+/**
+ * @property $exception
+ */
+class ErrorHandler extends ContextComponent
 {
-
     public $errorAction = '@eazy/controllers/error/index';
-
-    /**
-     * @var
-     */
-    public $exception;
 
     private $_errorData;
 
@@ -48,7 +46,7 @@ class ErrorHandler extends Component
             'line' => $exception->getLine(),
             'stack-trace' => explode("\n", $exception->getTraceAsString()),
         ];
-        var_dump($this->_errorData);
+//        var_dump($this->_errorData);
         $this->renderException($exception);
     }
 
@@ -64,13 +62,13 @@ class ErrorHandler extends Component
     {
         // TODO: Implement renderException() method.
 
-        $response = App::$get->getResponse();
+        $response = App::$component->response;
         try {
             $response->setStatusCodeByException($exception);
 
-            $useErrorView = $response->format === Response::FORMAT_HTML;
+            $useErrorView = $response->format === \eazy\http\Response::FORMAT_HTML;
             if ($useErrorView && $this->errorAction !== null) {
-                $result = App::$get->runAction($this->errorAction);
+                $result = App::$component->controller->runAction($this->errorAction);
                 $response->setContent($result);
             } elseif ($response->format === Response::FORMAT_HTML) {
                 if ($this->shouldRenderSimpleHtml()) {
@@ -93,7 +91,7 @@ class ErrorHandler extends Component
                 $response->data = $this->convertExceptionToArray($exception);
             }
         }catch (\Throwable $e) {
-            var_dump($e);
+            var_dump($e->getTraceAsString());
             $response->content = $e->getMessage();
         }
     }
@@ -104,7 +102,16 @@ class ErrorHandler extends Component
      */
     public function getException()
     {
-        return $this->exception;
+        return $this->attributes['exception'];
+    }
+
+    /**
+     * Return exception.
+     * @return mixed
+     */
+    public function setException($value)
+    {
+        return $this->setAttributes('exception', $value);
     }
 
     /**
@@ -195,16 +202,16 @@ class ErrorHandler extends Component
     public function renderFile($_file_, $_params_)
     {
         $_params_['handler'] = $this;
-        if ($this->exception instanceof \ErrorException || !App::$get->has('view')) {
+        if ($this->exception instanceof \ErrorException || !App::$component->has('view')) {
             ob_start();
             ob_implicit_flush(false);
             extract($_params_, EXTR_OVERWRITE);
-            require Eazy::getAlias($_file_);
+            require App::getAlias($_file_);
 
             return ob_get_clean();
         }
 
-        $view = App::$get->getView();
+        $view = App::$component->view;
 
         return $view->renderFile($_file_, $_params_, $this);
     }

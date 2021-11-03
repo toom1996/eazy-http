@@ -21,41 +21,11 @@ use Swoole\Server;
 
 class RequestCallback extends Module
 {
-    
-    public static function onRequest(Request $request, Response $response)
-    {
-        \eazy\http\Context::put('request', $request);
-        \eazy\http\Context::put('response', $response);
-        try {
-            [$handler, $params] = App::getRequest()->resolve();
-            $result = Router::runAction($handler);
-            if ($result !== null) {
-                App::getResponse()->setContent($result);
-            }
-
-        }catch (\Swoole\ExitException $exception){
-
-        }catch (\Throwable $exception) {
-            var_dump($exception);
-        } finally {
-
-        }
-        // BEFORE END
-//        echo '@@';
-        (App::getResponse()->send('hello' . $result));
-                \eazy\http\Context::delete('request');
-                \eazy\http\Context::delete('response');
-//        $response->end(\eazy\http\Context::get('request')->server['query_string']);
-//        echo 'unset';
-//        (new App($request, $response))->run();
-    }
-
     private function handleRequest()
     {
 
     }
-
-
+    
     public function __invoke(Request $request, Response $response)
     {
         try {
@@ -70,7 +40,7 @@ class RequestCallback extends Module
         }catch (\Swoole\ExitException $exception){
             $this->response->content = $exception->getStatus();
         }catch (\Throwable $exception) {
-            $this->errorHandler->handleException($e);
+            $this->errorHandler->handleException($exception);
         } finally {
             $this->response->send();
             \eazy\http\Context::delete();

@@ -3,6 +3,7 @@
 namespace eazy\http;
 
 use eazy\http\base\BaseComponent;
+use eazy\http\exceptions\HttpException;
 
 /**
  * @property integer $statusCode
@@ -190,6 +191,17 @@ class Response extends ContextComponent
             $headers = array_merge($this->headers, $headers);
         }
         $this->setAttributes('headers', $headers);
+
+        return $this;
+    }
+    
+    public function setStatusCodeByException($exception)
+    {
+        if ($exception instanceof HttpException) {
+            $this->setStatusCode($exception->getCode());
+        } else {
+            $this->setStatusCode(500);
+        }
 
         return $this;
     }

@@ -8,8 +8,13 @@ use eazy\http\Component;
 use eazy\http\ContextComponent;
 use eazy\http\exceptions\ViewNotFoundException;
 
+/**
+ * @property string $layout
+ */
 class View extends ContextComponent
 {
+    public $defaultLayout = '@app/views/layouts/main';
+
     /**
      * Default render file extension.
      * @var string
@@ -25,11 +30,71 @@ class View extends ContextComponent
 
     public $assetBundles = [];
 
-    
-    public function render(string $view, array $params = [])
+
+    public function render($view, $params = [])
     {
         $viewFile = $this->findViewFile($view);
-        return $this->renderFile($viewFile, $params);
+        $content = $this->renderFile($viewFile, $params);
+        return $this->renderContent($content);
+    }
+
+
+    /**
+     * @param $content
+     *
+     * @return bool|string
+     */
+    public function renderContent($content)
+    {
+        $layoutFile = $this->findLayoutFile();
+        if ($layoutFile !== false) {
+            return $this->renderFile($layoutFile, ['content' => $content], $this);
+        }
+        return $content;
+    }
+
+    public function getLayout()
+    {
+        var_dump('*******************');
+        var_dump($this->attributes['layout'] ?? $this->defaultLayout);
+        return $this->attributes['layout'] ?? $this->defaultLayout;
+    }
+
+
+    /**
+     *
+     *
+     * @param $view View
+     *
+     * @return bool|string
+     */
+    public function findLayoutFile()
+    {
+        if (is_string($this->layout)) {
+            $layout = $this->layout;
+        }
+
+        if (!isset($layout)) {
+            return false;
+        }
+
+        if (strncmp($layout, '@', 1) === 0) {
+            $file = App::getAlias($layout);
+        }
+        //        elseif (strncmp($layout, '/', 1) === 0) {
+        //            $file = YiiS::$app->getLayoutPath() . DIRECTORY_SEPARATOR . substr($layout, 1);
+        //        } else {
+        //            $file = $module->getLayoutPath() . DIRECTORY_SEPARATOR . $layout;
+        //        }
+
+        var_dump('//////////////////////');
+        var_dump($file);
+        if (pathinfo($file, PATHINFO_EXTENSION) !== '') {
+            return $file;
+        }
+        $path = $file . '.php';
+
+        return $path;
     }
 
     
@@ -77,7 +142,6 @@ class View extends ContextComponent
         //            'resolved' => $viewFile,
         //            'requested' => $requestedFile
         //        ];
-
         $output = $this->renderPhpFile($viewFile, $params);
         //        array_pop($this->_viewFiles);
         //        $this->context = $oldContext;
@@ -103,39 +167,5 @@ class View extends ContextComponent
             }
             throw $e;
         }
-    }
-
-    public function registerAssetBundle($name, $position = null)
-    {
-        if (!isset($this->assetBundles[$name])) {
-            $am = Eazy::$app->getAssetManager();
-            $bundle = $am->getBundle($name);
-            $this->assetBundles[$name] = false;
-            // register dependencies
-            $pos = isset($bundle->jsOptions['position']) ? $bundle->jsOptions['position'] : null;
-            foreach ($bundle->depends as $dep) {
-                $this->registerAssetBundle($dep, $pos);
-            }
-            $this->assetBundles[$name] = $bundle;
-        } elseif ($this->assetBundles[$name] === false) {
-            throw new InvalidConfigException("A circular dependency is detected for bundle '$name'.");
-        } else {
-            $bundle = $this->assetBundles[$name];
-        }
-
-        if ($position !== null) {
-            $pos = isset($bundle->jsOptions['position']) ? $bundle->jsOptions['position'] : null;
-            if ($pos === null) {
-                $bundle->jsOptions['position'] = $pos = $position;
-            } elseif ($pos > $position) {
-                throw new InvalidConfigException("An asset bundle that depends on '$name' has a higher javascript file position configured than '$name'.");
-            }
-            // update position for all dependencies
-            foreach ($bundle->depends as $dep) {
-                $this->registerAssetBundle($dep, $pos);
-            }
-        }
-
-        return $bundle;
     }
 }
