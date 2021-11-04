@@ -11,7 +11,7 @@ use eazy\http\exceptions\ViewNotFoundException;
 /**
  * @property string $layout
  */
-class View extends ContextComponent
+class View extends Component
 {
     public $defaultLayout = '@app/views/layouts/main';
 

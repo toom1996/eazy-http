@@ -12,7 +12,7 @@ use eazy\http\exceptions\UnknownClassException;
 /**
  * @property $exception
  */
-class ErrorHandler extends ContextComponent
+class ErrorHandler extends Component
 {
     public $errorAction = '@eazy/controllers/error/index';
 

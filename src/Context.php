@@ -4,10 +4,13 @@ namespace eazy\http;
 
 use Swoole\Coroutine;
 
-class Context
+/**
+ * @property integer $uid
+ */
+class Context extends Component
 {
     public static $pool = [];
-
+    
     static function get($key):mixed
     {
         $cid = Coroutine::getuid();
@@ -43,19 +46,4 @@ class Context
             }
         }
     }
-
-    public static function setAttributes($key, $value)
-    {
-        $cid = Coroutine::getuid();
-        if ($cid > 0){
-            self::$pool[$cid]['attributes'][$key] = $value;
-        }
-    }
-
-    public static function getAttributes($classId)
-    {
-        $cid = Coroutine::getuid();
-        return self::$pool[$cid][$classId]['attributes'] ?? [];
-    }
-
 }

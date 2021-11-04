@@ -101,9 +101,10 @@ class WorkerStartCallback
 
         // bootstrap component.
         foreach ($config['component'] as $componentName => $attributes) {
-            if (isset($attributes['bootstrap']) && $attributes['bootstrap'] === true) {
-                Container::$instance->set($componentName, $attributes);
+            if (isset($attributes['bootstrap']) && $attributes['bootstrap'] !== true) {
+                continue;
             }
+            Container::$instance->set($componentName, $attributes);
         }
 
         // set aliases.

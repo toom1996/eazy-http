@@ -29,6 +29,7 @@ class RequestCallback extends Module
     public function __invoke(Request $request, Response $response)
     {
         try {
+            $this->initRequest();
             $this->request->context = $request;
             $this->response->context = $response;
             $handler = $this->request->resolve();
@@ -40,17 +41,18 @@ class RequestCallback extends Module
         }catch (\Swoole\ExitException $exception){
             $this->response->content = $exception->getStatus();
         }catch (\Throwable $exception) {
+            var_dump($exception);
             $this->errorHandler->handleException($exception);
         } finally {
-            $this->response->send();
+//            $this->response->send();
             \eazy\http\Context::delete();
         }
         
 //        echo __FUNCTION__;
     }
 
-    public function emit()
+    public function initRequest()
     {
-
+        App::$pool[App::getUid()] = (Object)[];
     }
 }

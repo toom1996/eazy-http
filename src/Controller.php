@@ -15,7 +15,7 @@ use eazy\http\exceptions\UnknownClassException;
  * @property string $actionId
  * @property string $action
  */
-class Controller extends ContextComponent
+class Controller extends Component
 {
     private static $_controllerMap;
 

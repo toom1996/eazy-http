@@ -2,10 +2,13 @@
 
 namespace eazy\http;
 
+use eazy\base\Exception;
 use eazy\di\Di;
 use eazy\Eazy;
 use eazy\http\base\BaseApp;
+use eazy\http\exceptions\CoroutineException;
 use eazy\http\exceptions\InvalidConfigException;
+use Swoole\Coroutine;
 use Swoole\Http\Request;
 use Symfony\Component\Console\Tester\TesterTrait;
 
@@ -16,6 +19,8 @@ class App
      * @var \eazy\http\ServiceLocator
      */
     public static $component;
+    
+    public static $pool;
     
     private static $aliases;
 
@@ -144,7 +149,6 @@ class App
 
     public static function autoload($className)
     {
-                var_dump($className). PHP_EOL;
         if (isset(static::$classMap[$className])) {
             $classFile = self::$classMap[$className];
             if ($classFile[0] === '@') {
@@ -164,5 +168,27 @@ class App
         if (!class_exists($className, false) && !interface_exists($className, false) && !trait_exists($className, false)) {
             throw new UnknownClassException("Unable to find '$className' in file: $classFile. Namespace missing?");
         }
+    }
+    
+    public static function setContext($key, $value)
+    {
+        $cid = self::getUid();
+        self::$pool[$cid][$key] = $value;
+    }
+    
+    public static function getContext($key)
+    {
+        $cid = self::getUid();
+        return self::$pool[$cid][$key];
+    }
+    
+    public static function getUid()
+    {
+        $cid = Coroutine::getuid();
+        if ($cid < 0) {
+            throw new CoroutineException("Not in coroutine environment");
+        }
+        
+        return $cid;
     }
 }
