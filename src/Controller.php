@@ -82,18 +82,18 @@ class Controller extends Component
     private function setControllerAttributes(array $params)
     {
         foreach ($params as $paramName => $paramValue) {
-            $this->setAttributes($paramName, $paramValue);
+            $this->setContext($paramName, $paramValue);
         }
     }
 
 
     public function getAction()
     {
-        return $this->attributes['action'] ?? null;
+        return $this->context->action ?? null;
     }
 
     public function getActionId()
     {
-        return $this->attributes['actionId'] ?? null;
+        return $this->context->actionId ?? null;
     }
 }

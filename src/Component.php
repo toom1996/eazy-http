@@ -9,7 +9,7 @@ use eazy\http\exceptions\InvalidConfigException;
 use eazy\http\exceptions\UnknownClassException;
 
 /**
- * @property array $attributes
+ * @property array $context
  */
 class Component extends BaseObject
 {
@@ -24,7 +24,7 @@ class Component extends BaseObject
         $setter = 'set' . $name;
         if (method_exists($this, $setter)) {
             // set property
-            $this->$setter($value);
+            $this->$setter($name,$value);
             return;
         }
 
@@ -50,38 +50,27 @@ class Component extends BaseObject
         throw new UnknownClassException('Getting unknown property: ' . get_class($this) . '::' . $name);
     }
 
-    protected function setAttributes($key, $value)
+    protected function setContext($key, $value)
     {
         $oid = $this->getObjectId();
-        if (!isset(App::$pool[App::getUid()]->{$oid})) {
-            App::$pool[App::getUid()]->{$oid} = (Object)[];
+        if (!isset(App::$pool[App::getUid()][$oid])) {
+            App::$pool[App::getUid()][$oid] = (Object)[];
         }
-        App::$pool[App::getUid()]->{$oid}->attributes = $value;
-    }
-
-    protected function getAttributes()
-    {
-        $oid = $this->getObjectId();
-        if (!isset(App::$pool[App::getUid()]->{$this->getObjectId()}->attributes)) {
-            App::$pool[App::getUid()]->{$this->getObjectId()}->attributes = [];
-        }
-        return App::$pool[App::getUid()]->{$this->getObjectId()}->attributes;
-    }
-
-    protected function getObjectId()
-    {
-        return spl_object_id($this);
-    }
-
-    protected function setContext($value)
-    {
-        $oid = $this->getObjectId();
-        App::$pool[App::getUid()]->{$oid} = $value;
+        App::$pool[App::getUid()][$oid]->{$key} = $value;
     }
 
     protected function getContext()
     {
         $oid = $this->getObjectId();
-        return App::$pool[App::getUid()]->{$oid};
+        if (!isset(App::$pool[App::getUid()][$this->getObjectId()])) {
+            App::$pool[App::getUid()][$oid] = (Object)[];
+            return null;
+        }
+        return App::$pool[App::getUid()][$this->getObjectId()];
+    }
+
+    protected function getObjectId()
+    {
+        return spl_object_id($this);
     }
 }

@@ -5,9 +5,11 @@ namespace eazy\http\components;
 use eazy\http\App;
 use eazy\http\Component;
 use eazy\base\Exception;
+use eazy\http\Context;
 use eazy\http\ContextComponent;
 use eazy\http\exceptions\InvalidConfigException;
 use eazy\http\exceptions\UnknownClassException;
+use Swoole\Coroutine;
 
 /**
  * @property $exception
@@ -28,6 +30,8 @@ class ErrorHandler extends Component
 
     public $traceLine = '{html}';
 
+
+
     /**
      *
      * @param $exception \Exception
@@ -38,7 +42,7 @@ class ErrorHandler extends Component
      */
     public function handleException($exception)
     {
-        $this->exception = $exception;
+        $this->setContext('exception', $exception);
         $this->_errorData = [
             'type' => get_class($exception),
             'file' => method_exists($exception, 'getFile') ? $exception->getFile() : '',
@@ -69,6 +73,8 @@ class ErrorHandler extends Component
             $useErrorView = $response->format === \eazy\http\Response::FORMAT_HTML;
             if ($useErrorView && $this->errorAction !== null) {
                 $result = App::$component->controller->runAction($this->errorAction);
+                var_dump('-----------');
+                var_dump($result);
                 $response->setContent($result);
             } elseif ($response->format === Response::FORMAT_HTML) {
                 if ($this->shouldRenderSimpleHtml()) {
@@ -102,7 +108,7 @@ class ErrorHandler extends Component
      */
     public function getException()
     {
-        return $this->attributes['exception'];
+        return $this->context->exception;
     }
 
     /**
@@ -111,7 +117,7 @@ class ErrorHandler extends Component
      */
     public function setException($value)
     {
-        return $this->setAttributes('exception', $value);
+        return $this->setContext('exception', $value);
     }
 
     /**

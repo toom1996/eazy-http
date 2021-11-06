@@ -4,6 +4,7 @@ namespace eazy\http;
 
 use eazy\http\base\BaseComponent;
 use eazy\http\exceptions\HttpException;
+use Swoole\Coroutine;
 
 /**
  * @property integer $statusCode
@@ -13,7 +14,7 @@ use eazy\http\exceptions\HttpException;
  * @property bool $isSend
  * @property \Swoole\Http\Response $context
  */
-class Response extends ContextComponent
+class Response extends Component
 {
     public $defaultStatusCode = 200;
 
@@ -93,6 +94,11 @@ class Response extends ContextComponent
 
     const FORMAT_HTML = 'html';
 
+    public function initResponse(\Swoole\Http\Response $response)
+    {
+        App::$pool[Coroutine::getuid()][$this->getObjectId()] = $response;
+    }
+
     public function send()
     {
         if ($this->isSend) {
@@ -107,11 +113,11 @@ class Response extends ContextComponent
     {
         // Set isSend is true.
         // Prevent duplicate output.
-        $this->setAttributes('isSend', true);
+        $this->setContext('isSend', true);
         if (!$this->content) {
             $this->content = ob_get_clean();
         }
-        $this->context->setStatusCode($this->statusCode);
+        $this->context->setStatusCode($this->context->statusCode);
         $this->context->end($this->content);
     }
     
@@ -144,45 +150,46 @@ class Response extends ContextComponent
     
     public function getIsSend()
     {
-        return $this->attributes['isSend'] ?? false;
+        return $this->context->isSend ?? false;
     }
 
     public function getStatusCode()
     {
-        return $this->attributes['statusCode'] ?? $this->defaultStatusCode;
+        return $this->context->statusCode ?? $this->defaultStatusCode;
     }
 
     public function setStatusCode($code)
     {
-        $this->setAttributes('statusCode', $code);
+        $this->setContext('statusCode', $code);
         return $this;
     }
 
     public function getContent()
     {
-        return $this->attributes['content'] ?? null;
+        var_dump($this->context);
+        return $this->context->content ?? null;
     }
 
     public function setContent($content)
     {
-        $this->setAttributes('content', $content);
+        $this->setContext('content', $content);
         return $this;
     }
 
     public function getStream()
     {
-        return $this->attributes['stream'] ?? null;
+        return $this->context->stream ?? null;
     }
 
     public function setStream($stream)
     {
-        $this->setAttributes('stream', $stream);
+        $this->setContext('stream', $stream);
         return $this;
     }
 
     public function getHeaders()
     {
-        return $this->attributes['headers'] ?? [];
+        return $this->context->headers ?? [];
     }
 
     public function setHeaders($headers = [], $append = false)
@@ -190,7 +197,7 @@ class Response extends ContextComponent
         if ($append) {
             $headers = array_merge($this->headers, $headers);
         }
-        $this->setAttributes('headers', $headers);
+        $this->setContext('headers', $headers);
 
         return $this;
     }

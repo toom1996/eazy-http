@@ -56,8 +56,8 @@ class View extends Component
     public function getLayout()
     {
         var_dump('*******************');
-        var_dump($this->attributes['layout'] ?? $this->defaultLayout);
-        return $this->attributes['layout'] ?? $this->defaultLayout;
+        var_dump($this->context->layout ?? $this->defaultLayout);
+        return $this->context->layout ?? $this->defaultLayout;
     }
 
 

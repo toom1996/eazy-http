@@ -8,12 +8,19 @@ use eazy\Eazy;
 use eazy\helpers\BaseArrayHelper;
 use eazy\http\base\BaseComponent;
 use eazy\http\di\Container;
+use Swoole\Coroutine;
 
 /**
  * @property string $method
  */
-class Request extends ContextComponent
+class Request extends Component
 {
+    
+    public function initRequest(\Swoole\Http\Request $request)
+    {
+        App::$pool[Coroutine::getuid()][$this->getObjectId()] = $request;
+    }
+    
     public function fd()
     {
         return $this->context->fd;
@@ -62,6 +69,9 @@ class Request extends ContextComponent
 
     public function getMethod()
     {
+        echo '1111111111111111111';
+        var_dump($this->context);
+        echo '22222222222222222';
         return $this->context->server['request_method'];
     }
     
@@ -75,11 +85,5 @@ class Request extends ContextComponent
     {
         [$handler, $param] = Container::$instance->get('router')->parseRequest();
         return $handler;
-    }
-    
-    public function setRequest(\Swoole\Http\Request $request)
-    {
-        Context::put($this->getObjectId(), $request);
-        return $this;
     }
 }
