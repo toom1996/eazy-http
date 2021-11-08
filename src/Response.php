@@ -166,7 +166,6 @@ class Response extends Component
 
     public function getContent()
     {
-        var_dump($this->context);
         return $this->context->content ?? null;
     }
 

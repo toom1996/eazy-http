@@ -24,7 +24,7 @@ class Component extends BaseObject
         $setter = 'set' . $name;
         if (method_exists($this, $setter)) {
             // set property
-            $this->$setter($name,$value);
+            $this->$setter($value);
             return;
         }
 

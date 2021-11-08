@@ -69,9 +69,6 @@ class Request extends Component
 
     public function getMethod()
     {
-        echo '1111111111111111111';
-        var_dump($this->context);
-        echo '22222222222222222';
         return $this->context->server['request_method'];
     }
     

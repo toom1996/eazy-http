@@ -97,8 +97,7 @@ class ErrorHandler extends Component
                 $response->data = $this->convertExceptionToArray($exception);
             }
         }catch (\Throwable $e) {
-            var_dump($e->getTraceAsString());
-            $response->content = $e->getMessage();
+            $response->content = $e->getTraceAsString();
         }
     }
 

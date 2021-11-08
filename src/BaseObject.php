@@ -17,11 +17,10 @@ class BaseObject
         $this->init();
     }
 
-    protected function init()
+    public function init()
     {
-
+       
     }
-
     
     public static function configure($object, $properties)
     {

@@ -34,17 +34,15 @@ class RequestCallback extends Module
             $handler = $this->request->resolve();
             $result = $this->controller->runAction($handler);
             if ($result) {
-                $this->response->context->content = $result;
+                $this->response->content = $result;
             }
             $this->response->send();
         }catch (\Swoole\ExitException $exception){
             var_dump($exception);
             $this->response->content = $exception->getStatus();
         }catch (\Throwable $exception) {
-            var_dump($exception);
             $this->errorHandler->handleException($exception);
         } finally {
-            var_dump($this->response->getContent());
             $this->response->send();
         }
         
