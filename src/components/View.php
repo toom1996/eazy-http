@@ -171,7 +171,7 @@ class View extends Component
     {
         if (!isset($this->assetBundles[$name])) {
             $am = $this->getAssetManager();
-            $bundle = $am->getBundle($name);
+            $bundle = $this->getBundle($name);
             $this->assetBundles[$name] = false;
             // register dependencies
             $pos = isset($bundle->jsOptions['position']) ? $bundle->jsOptions['position'] : null;
@@ -201,5 +201,48 @@ class View extends Component
         return $bundle;
     }
 
+    public function beginPage()
+    {
+        ob_start();
+        ob_implicit_flush(false);
+
+//        $this->trigger(self::EVENT_BEGIN_PAGE);
+    }
+
+    public function endPage()
+    {
+//        $this->trigger(self::EVENT_END_PAGE);
+        ob_end_flush();
+    }
+
+    public function getBundle($name, $publish = true)
+    {
+        if (!isset($this->bundles[$name])) {
+            return $this->bundles[$name] = $this->loadBundle($name, [], $publish);
+        }
+//        elseif ($this->bundles[$name] instanceof AssetBundle) {
+//            return $this->bundles[$name];
+//        } elseif (is_array($this->bundles[$name])) {
+//            return $this->bundles[$name] = $this->loadBundle($name, $this->bundles[$name], $publish);
+//        } elseif ($this->bundles[$name] === false) {
+//            return $this->loadDummyBundle($name);
+//        }
+
+        throw new InvalidConfigException("Invalid asset bundle configuration: $name");
+    }
+
+    protected function loadBundle($name, $config = [], $publish = true)
+    {
+        if (!isset($config['class'])) {
+            $config['class'] = $name;
+        }
+        /* @var $bundle AssetBundle */
+        $bundle = App::createObject($config);
+        if ($publish) {
+            $bundle->publish($this);
+        }
+
+        return $bundle;
+    }
 
 }
