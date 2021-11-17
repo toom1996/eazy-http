@@ -19,10 +19,14 @@ class Container extends BaseObject implements ContainerInterface
     public static $instance;
     
     /**
-     * @var array Singleton objects.
+     * Singleton objects.
+     * @var array
      */
     private array $_singletons = [];
-    
+
+    /**
+     * Init container instance.
+     */
     protected function init()
     {
         self::$instance = $this;
@@ -31,25 +35,27 @@ class Container extends BaseObject implements ContainerInterface
 
     /**
      * Set container singleton.
-     * `Container::set('classname', [
+     * ```php
+     * // set class based on string definition and array params.
+     * Container::set('classname', [
      *      'foo' => 'bar',
-     * ]);`
+     * ]);
      *
-     * `Container::set([
+     * // set class based on array definition.
+     * Container::set([
      *      'class' => classname
      *      'foo' => 'bar',
-     * ]);`
-     *
-     * @param  array  $definition
+     * ]);
+     * ```
+     * @param $definition
      * @param  array  $params
      *
      * @return $this
      * @throws \eazy\http\exceptions\InvalidConfigException
      */
-    public function set($class, $definition = [])
+    public function set($definition, array $params = [])
     {
-        $definition = $this->normalizeDefinition($class, $definition);
-        $this->_singletons[$class] = App::createObject($definition);
+        $this->_singletons[$class] = $this->build($definition, $params);
     }
 
     /**
@@ -63,9 +69,11 @@ class Container extends BaseObject implements ContainerInterface
     public function get($class, $params = [], $config = [])
     {
         if (isset($this->_singletons[$class])) {
-            // singleton
             return $this->_singletons[$class];
         }
+
+        // use context singletons.
+        //throw new InvalidConfigException('Failed to get component $class');
     }
 
     /**
@@ -76,7 +84,13 @@ class Container extends BaseObject implements ContainerInterface
      * @return object|void
      * @throws \ReflectionException
      */
-    protected function build($definition)
+    public function build($definition, $params)
+    {
+        $definition = $this->normalizeDefinition($definition, $params);
+        return $this->makeObject($definition);
+    }
+
+    protected function makeObject($definition)
     {
         $ref = new \ReflectionClass($definition['class']);
         unset($definition['class']);
@@ -85,15 +99,18 @@ class Container extends BaseObject implements ContainerInterface
 
     /**
      * Normalize definition.
+     * It will merge definition and params using for build object.
      * @param $class
      * @param $definition
      *
      * @return array|void
      * @throws \eazy\http\exceptions\InvalidConfigException
      */
-    protected function normalizeDefinition($class, $definition)
+    protected function normalizeDefinition($definition, $params)
     {
-        if (is_array($definition)) {
+        if (is_string($definition)) {
+            return array_merge(['class' => $definition], $params);
+        }elseif (is_array($definition)) {
             if (!isset($definition['class'])) {
                 if (strpos($class, '\\') !== false) {
                     $definition['class'] = $class;
@@ -101,8 +118,11 @@ class Container extends BaseObject implements ContainerInterface
                     throw new InvalidConfigException('A class definition requires a "class" member.');
                 }
             }
+
             return $definition;
         }
+
+        throw new InvalidConfigException("Unsupported definition type for \"$class\": " . gettype($definition));
     }
 
     public function has(string $id)

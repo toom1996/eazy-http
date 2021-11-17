@@ -49,6 +49,11 @@ class Component extends BaseObject
 
         throw new UnknownClassException('Getting unknown property: ' . get_class($this) . '::' . $name);
     }
+    
+    protected function setAttributes()
+    {
+        
+    }
 
     protected function setContext($key, $value)
     {

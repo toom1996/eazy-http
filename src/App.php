@@ -6,6 +6,7 @@ use eazy\base\Exception;
 use eazy\di\Di;
 use eazy\Eazy;
 use eazy\http\base\BaseApp;
+use eazy\http\di\Container;
 use eazy\http\exceptions\CoroutineException;
 use eazy\http\exceptions\InvalidConfigException;
 use Swoole\Coroutine;
@@ -13,36 +14,45 @@ use Swoole\Http\Request;
 use Symfony\Component\Console\Tester\TesterTrait;
 
 
-class App
+class App extends BaseApp
 {
     /**
      * @var \eazy\http\ServiceLocator
      */
     public static $component;
-    
+
+    /**
+     * Context pool.
+     * @var
+     */
     public static $pool;
-    
+
+    /**
+     * Alias map.
+     * @var
+     */
     private static $aliases;
 
 
+    /**
+     * Creates a new object using the given configuration.
+     * Support create an object based on class name or configuration of params.
+     * ```php
+     * // create object based on class name.
+     * $object = App::createObject('\eazy\http\Request');
+     * $object = App::createObject(Request::class);
+     *
+     * // create object
+     * @param $definition
+     * @param  array  $params
+     *
+     * @return object
+     * @throws \ReflectionException
+     * @throws \eazy\http\exceptions\InvalidConfigException
+     */
     public static function createObject($definition, $params = [])
     {
-        if (is_array($definition)) {
-            if (!isset($definition['class'])) {
-                if (strpos($class, '\\') !== false) {
-                    $definition['class'] = $class;
-                } else {
-                    throw new InvalidConfigException('A class definition requires a "class" member.');
-                }
-            }
-        }elseif(is_string($definition)){
-//            var_dump($definition);
-//            var_dump(class_exists($definition));
-        }
-
-        $ref = new \ReflectionClass($definition['class']);
-        unset($definition['class']);
-        return $ref->newInstanceArgs([$definition]);
+        Container::$instance->build();
     }
 
     /**
