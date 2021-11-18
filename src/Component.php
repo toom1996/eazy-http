@@ -69,8 +69,10 @@ class Component extends BaseObject
         $oid = $this->getObjectId();
         if (!isset(App::$pool[App::getUid()][$this->getObjectId()])) {
             App::$pool[App::getUid()][$oid] = (Object)[];
+            var_dump((Object)[]);
             return null;
         }
+
         return App::$pool[App::getUid()][$this->getObjectId()];
     }
 

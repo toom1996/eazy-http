@@ -73,8 +73,6 @@ class ErrorHandler extends Component
             $useErrorView = $response->format === \eazy\http\Response::FORMAT_HTML;
             if ($useErrorView && $this->errorAction !== null) {
                 $result = App::$component->controller->runAction($this->errorAction);
-                var_dump('-----------');
-                var_dump($result);
                 $response->setContent($result);
             } elseif ($response->format === Response::FORMAT_HTML) {
                 if ($this->shouldRenderSimpleHtml()) {

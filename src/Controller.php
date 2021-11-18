@@ -70,9 +70,7 @@ class Controller extends Component
                 'actionId' => $actionId,
             ];
 
-            self::$_controllerMap[$handler] = App::createObject([
-                'class' => $className
-            ]);
+            self::$_controllerMap[$handler] = App::createObject($className);
         }
         $this->setControllerAttributes($this->_controllerMapParams[$handler]);
 

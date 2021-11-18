@@ -52,7 +52,8 @@ class App extends BaseApp
      */
     public static function createObject($definition, $params = [])
     {
-        Container::$instance->build();
+        $definition = Container::$instance->normalizeDefinition($definition, $params);
+        return Container::$instance->build($definition);
     }
 
     /**

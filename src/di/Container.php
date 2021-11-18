@@ -40,22 +40,17 @@ class Container extends BaseObject implements ContainerInterface
      * Container::set('classname', [
      *      'foo' => 'bar',
      * ]);
-     *
-     * // set class based on array definition.
-     * Container::set([
-     *      'class' => classname
-     *      'foo' => 'bar',
-     * ]);
      * ```
-     * @param $definition
+     * @param string $name
      * @param  array  $params
      *
      * @return $this
      * @throws \eazy\http\exceptions\InvalidConfigException
      */
-    public function set($definition, array $params = [])
+    public function set(string $name, array $params = [])
     {
-        $this->_singletons[$class] = $this->build($definition, $params);
+        $definition = $this->normalizeDefinition($name, $params);
+        $this->_singletons[$name] = $this->build($definition, $params);
     }
 
     /**
@@ -84,9 +79,8 @@ class Container extends BaseObject implements ContainerInterface
      * @return object|void
      * @throws \ReflectionException
      */
-    public function build($definition, $params)
+    public function build($definition)
     {
-        $definition = $this->normalizeDefinition($definition, $params);
         return $this->makeObject($definition);
     }
 
@@ -106,20 +100,11 @@ class Container extends BaseObject implements ContainerInterface
      * @return array|void
      * @throws \eazy\http\exceptions\InvalidConfigException
      */
-    protected function normalizeDefinition($definition, $params)
+    public function normalizeDefinition($definition, $params)
     {
+        var_dump($definition);
         if (is_string($definition)) {
             return array_merge(['class' => $definition], $params);
-        }elseif (is_array($definition)) {
-            if (!isset($definition['class'])) {
-                if (strpos($class, '\\') !== false) {
-                    $definition['class'] = $class;
-                } else {
-                    throw new InvalidConfigException('A class definition requires a "class" member.');
-                }
-            }
-
-            return $definition;
         }
 
         throw new InvalidConfigException("Unsupported definition type for \"$class\": " . gettype($definition));
