@@ -7,9 +7,12 @@ use eazy\http\components\UrlManager;
 use eazy\Eazy;
 use eazy\http\exceptions\InvalidConfigException;
 use eazy\http\exceptions\UnknownClassException;
+use Swoole\Coroutine;
 
 /**
- * @property array $context
+// * @property array $context
+ * @property array $attributes
+ * @property integer $classId
  */
 class Component extends BaseObject
 {
@@ -50,9 +53,15 @@ class Component extends BaseObject
         throw new UnknownClassException('Getting unknown property: ' . get_class($this) . '::' . $name);
     }
     
-    protected function setAttributes()
+    protected function setAttribute($key, $value)
     {
-        
+        return App::$attributes[Coroutine::getuid()][$this->classId][$key] = $value;
+    }
+
+    public function getAttributes()
+    {
+        echo __FUNCTION__;
+        return App::$attributes[Coroutine::getuid()][$this->classId];
     }
 
     protected function setContext($key, $value)
@@ -76,7 +85,13 @@ class Component extends BaseObject
         return App::$pool[App::getUid()][$this->getObjectId()];
     }
 
-    protected function getObjectId()
+    protected function getObjectId(): int
+    {
+        return spl_object_id($this);
+    }
+
+
+    public function getClassId()
     {
         return spl_object_id($this);
     }

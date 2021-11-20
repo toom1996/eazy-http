@@ -7,6 +7,7 @@ use eazy\http\exceptions\HttpException;
 use Swoole\Coroutine;
 
 /**
+ * @property \Swoole\Http\Response $response
  * @property integer $statusCode
  * @property string $content
  * @property string $stream
@@ -16,10 +17,16 @@ use Swoole\Coroutine;
  */
 class Response extends Component
 {
+    /**
+     * Default response status code.
+     * @var int
+     */
     public $defaultStatusCode = 200;
 
-    public $defaultStatusText = 'OK';
-
+    /**
+     * List of HTTP status codes and the corresponding texts.
+     * @var string[]
+     */
     public static $httpStatuses = [
         100 => 'Continue',
         101 => 'Switching Protocols',
@@ -94,11 +101,6 @@ class Response extends Component
 
     const FORMAT_HTML = 'html';
 
-    public function initResponse(\Swoole\Http\Response $response)
-    {
-        App::$pool[Coroutine::getuid()][$this->getObjectId()] = $response;
-    }
-
     public function send()
     {
         if ($this->isSend) {
@@ -113,12 +115,12 @@ class Response extends Component
     {
         // Set isSend is true.
         // Prevent duplicate output.
-        $this->setContext('isSend', true);
+        $this->setAttribute('isSend', true);
         if (!$this->content) {
             $this->content = ob_get_clean();
         }
-        $this->context->setStatusCode($this->context->statusCode);
-        $this->context->end($this->content);
+        $this->response->setStatusCode($this->response->statusCode);
+        $this->response->end($this->content);
     }
     
     public function prepare()
@@ -143,52 +145,62 @@ class Response extends Component
         foreach ($this->headers as $name => $value) {
             $name = str_replace(' ', '-', ucwords(str_replace('-', ' ', $name)));
             // set replace for first occurrence of header but false afterwards to allow multiple
-            $this->context->header($name, $value);
+            $this->response->header($name, $value);
         }
         //        $this->sendCookies();
     }
     
     public function getIsSend()
     {
-        return $this->context->isSend ?? false;
+        return $this->attributes['isSend'] ?? false;
     }
 
     public function getStatusCode()
     {
-        return $this->context->statusCode ?? $this->defaultStatusCode;
+        return $this->attributes['statusCode'] ?? $this->defaultStatusCode;
     }
 
     public function setStatusCode($code)
     {
-        $this->setContext('statusCode', $code);
+        $this->setAttribute('statusCode', $code);
         return $this;
     }
 
     public function getContent()
     {
-        return $this->context->content ?? null;
+        return $this->attributes['content'] ?? null;
     }
 
     public function setContent($content)
     {
-        $this->setContext('content', $content);
+        $this->setAttribute('content', $content);
         return $this;
     }
 
     public function getStream()
     {
-        return $this->context->stream ?? null;
+        return $this->attributes['stream'] ?? null;
+    }
+
+    public function setResponse(\Swoole\Http\Response $response)
+    {
+        $this->setAttribute('response', $response);
+    }
+
+    public function getResponse()
+    {
+        return $this->attributes['response'];
     }
 
     public function setStream($stream)
     {
-        $this->setContext('stream', $stream);
+        $this->setAttribute('stream', $stream);
         return $this;
     }
 
     public function getHeaders()
     {
-        return $this->context->headers ?? [];
+        return $this->attributes['headers'] ?? [];
     }
 
     public function setHeaders($headers = [], $append = false)
@@ -196,7 +208,7 @@ class Response extends Component
         if ($append) {
             $headers = array_merge($this->headers, $headers);
         }
-        $this->setContext('headers', $headers);
+        $this->setAttribute('headers', $headers);
 
         return $this;
     }

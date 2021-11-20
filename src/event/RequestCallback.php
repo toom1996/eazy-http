@@ -29,9 +29,8 @@ class RequestCallback extends Module
     public function __invoke(Request $request, Response $response)
     {
         try {
-            $this->request->initRequest($request);
-            $this->response->initResponse($response);
-            $handler = $this->request->resolve();
+            $this->response->setResponse($response);
+            $handler = $this->request->resolve($request);
             $result = $this->controller->runAction($handler);
             if ($result) {
                 $this->response->content = $result;

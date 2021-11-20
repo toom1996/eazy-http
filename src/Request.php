@@ -12,33 +12,37 @@ use Swoole\Coroutine;
 
 /**
  * @property string $method
+ * @property integer $fd
+ * @property integer $streamId
+ * @property array $header
+ * @property array $server
  */
 class Request extends Component
 {
     
-    public function initRequest(\Swoole\Http\Request $request)
+    public function getRequest()
     {
-        App::$pool[Coroutine::getuid()][$this->getObjectId()] = $request;
+        return $this->attributes['request'];
     }
     
-    public function fd()
+    public function getFd()
     {
-        return $this->context->fd;
+        return $this->request->fd;
     }
 
-    public function streamId()
+    public function getStreamId()
     {
-        return $this->context->streamId;
+        return $this->request->streamId;
     }
 
-    public function header()
+    public function getHeader(): array
     {
-        return $this->context->header;
+        return $this->request->header;
     }
     
-    public function server()
+    public function getServer()
     {
-        return $this->context->server;
+        return $this->request->server;
     }
     
     public function get($name = null, $default = null)
@@ -52,12 +56,12 @@ class Request extends Component
 
     public function queryString($default = null)
     {
-        return $this->context->server['query_string'] ?? $default;
+        return $this->request->server['query_string'] ?? $default;
     }
 
     private function getQueryParams()
     {
-        return $this->context->get ?? [];
+        return $this->request->get ?? [];
     }
 
     private function getQueryParam($name, $defaultValue = null)
@@ -69,18 +73,19 @@ class Request extends Component
 
     public function getMethod()
     {
-        return $this->context->server['request_method'];
+        return $this->request->server['request_method'];
     }
     
     public function getUri()
     {
-        return $this->context->server['request_uri'];
+        return $this->request->server['request_uri'];
     }
 
     
-    public function resolve()
+    public function resolve(\Swoole\Http\Request $request)
     {
-        [$handler, $param] = Container::$instance->get('router')->parseRequest();
+        $this->setAttribute('request', $request);
+        [$handler, $param] = App::$component->router->parseRequest();
         return $handler;
     }
 }

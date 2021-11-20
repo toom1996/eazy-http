@@ -27,6 +27,8 @@ class App extends BaseApp
      */
     public static $pool;
 
+    public static $attributes;
+
     /**
      * Alias map.
      * @var

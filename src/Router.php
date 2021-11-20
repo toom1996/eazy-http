@@ -67,6 +67,7 @@ class Router extends Component
 
     public function parseRequest(): array
     {
+        die('123');
         $match = $this->matchRoute();
         switch ($match[0]) {
             case Dispatcher::NOT_FOUND:

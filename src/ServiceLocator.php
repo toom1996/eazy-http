@@ -14,6 +14,7 @@ use eazy\http\exceptions\InvalidConfigException;
  * @property \eazy\http\components\View $view
  * @property \eazy\http\Controller $controller
  * @property \eazy\http\components\ErrorHandler $errorHandler
+ * @property \eazy\http\Router $router
  */
 class ServiceLocator extends BaseComponent
 {
