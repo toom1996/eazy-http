@@ -47,5 +47,4 @@ class RequestCallback extends Module
         
         echo __FUNCTION__;
     }
-
 }

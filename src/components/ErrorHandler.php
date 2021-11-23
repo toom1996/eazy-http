@@ -50,7 +50,7 @@ class ErrorHandler extends Component
             'line' => $exception->getLine(),
             'stack-trace' => explode("\n", $exception->getTraceAsString()),
         ];
-//        var_dump($this->_errorData);
+        var_dump($this->_errorData);
         $this->renderException($exception);
     }
 

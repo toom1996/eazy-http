@@ -5,7 +5,7 @@
  * @var $handler \eazy\http\components\ErrorHandler
  */
 
-$this->title = 'error';
+$this->title = $exception->getMessage();
 ?>
 <style>
     h1 {

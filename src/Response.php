@@ -119,7 +119,8 @@ class Response extends Component
         if (!$this->content) {
             $this->content = ob_get_clean();
         }
-        $this->response->setStatusCode($this->response->statusCode);
+        var_dump($this->response);
+        $this->response->setStatusCode($this->statusCode);
         $this->response->end($this->content);
     }
     
