@@ -44,7 +44,8 @@ class RequestCallback extends Module
         } finally {
             $this->response->send();
         }
-        
+
+        unset(App::$attributes[Coroutine::getuid()]);
         echo __FUNCTION__;
     }
 }

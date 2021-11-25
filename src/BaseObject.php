@@ -24,6 +24,7 @@ class BaseObject
     
     public static function configure($object, $properties)
     {
+        echo __FUNCTION__;
         foreach ($properties as $name => $value) {
             $object->$name = $value;
         }

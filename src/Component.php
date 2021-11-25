@@ -60,7 +60,7 @@ class Component extends BaseObject
 
     public function getAttributes()
     {
-        echo __FUNCTION__;
+        echo __FUNCTION__ . get_called_class();
         return App::$attributes[Coroutine::getuid()][$this->classId];
     }
 

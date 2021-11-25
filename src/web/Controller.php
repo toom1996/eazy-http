@@ -2,16 +2,18 @@
 
 namespace eazy\http\web;
 
+use eazy\http\App;
 use eazy\http\BaseController;
 use eazy\http\Component;
 
-class Controller extends BaseController
+class Controller extends \eazy\http\Controller
 {
 
     public function runAction($action)
     {
-        $this->beforeAction($action);
-        $result = $this->{$action}();
+        if ($this->beforeAction($this->action)) {
+            $result = $this->{$action}();
+        }
         $this->afterAction($action, $result);
 
         return $result;
@@ -20,7 +22,8 @@ class Controller extends BaseController
 
     public function beforeAction($action)
     {
-        echo 'beforeAction -> ' . $action;
+        echo 'beforeAction -> ' . $action . PHP_EOL;
+        return true;
     }
 
     public function afterAction($action, $result)

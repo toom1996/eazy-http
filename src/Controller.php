@@ -5,11 +5,13 @@ namespace eazy\http;
 
 
 use app\controllers\SiteController;
+use eazy\console\StdoutLogger;
 use eazy\Eazy;
 use eazy\helpers\BaseFileHelper;
 use eazy\http\di\Container;
 use eazy\http\exceptions\InvalidConfigException;
 use eazy\http\exceptions\UnknownClassException;
+use Swoole\FastCGI\Record\Stdout;
 
 /**
  * @property string $method
@@ -28,19 +30,13 @@ class Controller extends Component
     
     public function runAction($path)
     {
-        $controller = new ($this->setControllerMap($path));
-        if (is_object($controller) && $controller instanceof BaseController) {
-            return call_user_func([new $controller, 'runAction'], $this->method);
+        $controller = $this->setControllerMap($path);
+        if (is_object($controller) && $controller instanceof Controller) {
+            return $controller->runAction($controller->method);
         }
 
         throw new InvalidConfigException("Run action fail.");
     }
-
-    public function beforeAction($action)
-    {
-
-    }
-
 
     private function setControllerMap($handler)
     {
@@ -55,7 +51,7 @@ class Controller extends Component
             if (strpos($controller, 'Controller') === false) {
                 $controller = ucfirst($controller).'Controller';
             }
-            $this->setAction($action);
+            $config['action'] = $action;
             if (strpos($action, 'action') === false) {
                 $action = 'action'.ucfirst($action);
             }
@@ -68,15 +64,20 @@ class Controller extends Component
                 throw new UnknownClassException("{Unknown class {$handler}");
             }
 
-            $this->setMethod($action);
+            $config['method'] = $action;
 
             $classNamespace = BaseFileHelper::getNamespace($handlerFile);
             $className = '\\' . $classNamespace . '\\' . basename(str_replace('.php', '', $handlerFile));
 
-            $this->_controllerMap[$handler] = $className;
+            echo 'new Controller' . PHP_EOL;
+            $this->_controllerMap[$handler] = [
+                $className, $config
+            ];
         }
 
-        return $this->_controllerMap[$handler];
+        echo 'return controller';
+        var_dump($this->_controllerMap[$handler]);
+        return App::createObject(...$this->_controllerMap[$handler]);
     }
 
     public function setAction($action)
