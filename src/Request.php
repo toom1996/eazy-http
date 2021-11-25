@@ -86,6 +86,10 @@ class Request extends Component
     {
         $this->setAttribute('request', $request);
         [$handler, $param] = App::$component->router->parseRequest();
+
+        var_dump('HANDLER') . PHP_EOL;
+        var_dump($handler);
+        var_dump($param);
         return $handler;
     }
 }

@@ -13,7 +13,7 @@ use FastRoute\RouteCollector;
 use http\Exception\BadMethodCallException;
 use function FastRoute\simpleDispatcher;
 
-class Router extends Component
+#[\Attribute] class Router extends Component
 {
     private $_adapter;
 

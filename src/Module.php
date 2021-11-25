@@ -8,5 +8,7 @@ use eazy\http\exceptions\InvalidConfigException;
 
 class Module extends ServiceLocator
 {
-
+    public function runAction($path)
+    {
+    }
 }

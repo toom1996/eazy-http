@@ -32,13 +32,6 @@ class View extends Component
      */
     public string $defaultViewPath = '';
 
-    /**
-     * Render html title.
-     * @var
-     */
-    public string $title;
-
-
     public $assetBundles = [];
 
     /**
@@ -90,9 +83,20 @@ class View extends Component
     {
         $layoutFile = $this->findLayoutFile();
         if ($layoutFile !== false) {
-            return $this->renderFile($layoutFile, ['content' => $content], $this);
+            return $this->renderFile($layoutFile, ['content' => $content, 'title' => $this->title], $this);
         }
         return $content;
+    }
+
+    public function getTitle()
+    {
+        return $this->attributes['title'] ?? '';
+    }
+
+    public function setTitle(string $title)
+    {
+        $this->setAttribute('title', $title);
+        return $this;
     }
 
     public function getLayout()
