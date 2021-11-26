@@ -21,11 +21,6 @@ use Swoole\Server;
 
 class RequestCallback extends Module
 {
-    private function handleRequest()
-    {
-
-    }
-    
     public function __invoke(Request $request, Response $response)
     {
         try {

@@ -60,8 +60,15 @@ class Component extends BaseObject
 
     public function getAttributes()
     {
-        echo __FUNCTION__ . get_called_class();
-        return App::$attributes[Coroutine::getuid()][$this->classId];
+        echo __FUNCTION__ . get_called_class() . PHP_EOL;
+//        var_dump(debug_print_backtrace());
+        echo PHP_EOL;
+        return App::$attributes[Coroutine::getuid()][$this->classId] ?? [];
+    }
+    
+    public function getAttribute($key)
+    {
+        return App::$attributes[Coroutine::getuid()][$this->classId][$key] ?? null;
     }
 
     protected function setContext($key, $value)

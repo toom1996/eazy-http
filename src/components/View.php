@@ -90,7 +90,7 @@ class View extends Component
 
     public function getTitle()
     {
-        return $this->attributes['title'] ?? '';
+        return $this->getAttribute('title') ?: App::;
     }
 
     public function setTitle(string $title)

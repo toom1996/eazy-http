@@ -25,14 +25,14 @@ class WorkerStartCallback
 {
     private static $_config;
 
+    // Http core component.
     const CORE_COMPONENTS = [
-        'request' => ['class' => Request::class],
-        'response' => ['class' => Response::class],
-        'errorHandler' => ['class' => ErrorHandler::class],
-        'urlManager' => ['class' => UrlManager::class],
-        'view' => ['class' => View::class],
-        'assetManager' => ['class' => AssetManager::class],
-        'log' => ['class' => LogDispatcher::class],
+        'controller' => ['class' => \eazy\http\Controller::class],
+        'request' => ['class' => \eazy\http\Request::class],
+        'response' => ['class' => \eazy\http\Response::class],
+        'errorHandler' => ['class' => \eazy\http\components\ErrorHandler::class],
+        'view' => ['class' => \eazy\http\components\View::class],
+        'router' => ['class' => \eazy\http\Router::class],
     ];
 
     const BOOTSTRAP_COMPONENTS = [
@@ -41,43 +41,17 @@ class WorkerStartCallback
 
     public static function onWorkerStart($server, int $workerId)
     {
-        new Container();
-        App::$component = new ServiceLocator();
-
-        // bootstrap global component.
-//        Container::$instance->set('request', [
-//            'class' => \eazy\http\Request::class
-//        ]);
-//        Eazy::$container = new Di();
-//        Eazy::$container->set('request', [
-//            'class' => \eazy\http\Request::class
-//        ]);
-//        Eazy::$container->set('response', [
-//            'class' => \eazy\http\Response::class
-//        ]);
-//
-//        Eazy::$container->set('router', [
-//            'class' => \eazy\http\Router::class
-//        ]);
-//        Container::$instance->set();
-        
-        App::setAlias('@eazy', dirname(__DIR__));
         try {
+            // defined framework vendor path alias.
+            App::setAlias('@eazy', dirname(__DIR__));
+            new Container();
+            App::$component = new ServiceLocator();
             self::bootstrap($server->configPath);
-            var_dump(Container::$instance);
-//            if (!isset($config[Bootstrap::$packageName])) {
-//                throw new InvalidConfigException("Unable to determine the eazy-http config.");
-//            }
-//            self::$_config = $config[Bootstrap::$packageName];
-//            self::initConfigure();
-            // bootstrap components.
-//            self::bootstrapComponet();
-
             swoole_set_process_name($server->taskworker ? "TaskWorker#{$workerId}" :"Worker#{$workerId}");
         }catch (\Throwable $exception) {
+            // TODO handle exception.
             var_dump($exception->getTraceAsString());
             var_dump($exception->getLine());
-            Eazy::error($exception->getMessage());
             exit($exception->getCode());
         }
     }
@@ -90,14 +64,22 @@ class WorkerStartCallback
      */
     private static function bootstrap($configPath)
     {
-        $config = [];
-        if (is_dir($configPath)) {
-            foreach (FileHelper::findFiles($configPath, ['only' => ['*.php']]) as $name => $file) {
-                $config['component'][basename($file, '.php')] = require $file;
-            }
-        }else{
-            $config = require $configPath;
-        }
+//        $config = require $configPath;
+//        var_dump($config['components']);
+//        var_dump(self::CORE_COMPONENTS);
+//        foreach (self::CORE_COMPONENTS as $componentName => $component) {
+//            $config['components'][$componentName] = array_merge($component, $config['components'][$componentName]);
+//        }
+////        $config = ($config['components'] + self::CORE_COMPONENTS);
+        var_dump($config);
+        die;
+//        if (is_dir($configPath)) {
+//            foreach (FileHelper::findFiles($configPath, ['only' => ['*.php']]) as $name => $file) {
+//                $config['component'][basename($file, '.php')] = require $file;
+//            }
+//        }else{
+//            $config = require $configPath;
+//        }
 
         // bootstrap component.
         foreach ($config['component'] as $componentName => $attributes) {

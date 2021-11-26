@@ -37,7 +37,6 @@ class Bootstrap implements BootstrapCommandInterface
      */
     public function bootstrap(Application &$console)
     {
-        Log::$logger = '123';
         foreach ($this->commands as $command) {
             $console->add(new $command);
         }

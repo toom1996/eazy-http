@@ -16,6 +16,7 @@ use Swoole\FastCGI\Record\Stdout;
 /**
  * @property string $method
  * @property string $action
+ * @property \eazy\http\components\View $view
  */
 class Controller extends Component
 {

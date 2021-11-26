@@ -22,7 +22,7 @@ class Controller extends \eazy\http\Controller
 
     public function beforeAction($action)
     {
-        echo 'beforeAction -> ' . $action . PHP_EOL;
+        // TODO trigger `beforeAction` event.
         return true;
     }
 
@@ -31,5 +31,10 @@ class Controller extends \eazy\http\Controller
         echo PHP_EOL;
         echo 'afterAction -> ' . $action;
         echo 'afterAction -> ' . $result;
+    }
+    
+    public function getView()
+    {
+        return App::$component->view;
     }
 }
