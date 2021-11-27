@@ -153,12 +153,12 @@ class Response extends Component
     
     public function getIsSend()
     {
-        return $this->attributes['isSend'] ?? false;
+        return $this->properties['isSend'] ?? false;
     }
 
     public function getStatusCode()
     {
-        return $this->attributes['statusCode'] ?? $this->defaultStatusCode;
+        return $this->properties['statusCode'] ?? $this->defaultStatusCode;
     }
 
     public function setStatusCode($code)
@@ -169,7 +169,7 @@ class Response extends Component
 
     public function getContent()
     {
-        return $this->attributes['content'] ?? null;
+        return $this->properties['content'] ?? null;
     }
 
     public function setContent($content)
@@ -180,7 +180,7 @@ class Response extends Component
 
     public function getStream()
     {
-        return $this->attributes['stream'] ?? null;
+        return $this->properties['stream'] ?? null;
     }
 
     public function setResponse(\Swoole\Http\Response $response)
@@ -190,7 +190,7 @@ class Response extends Component
 
     public function getResponse()
     {
-        return $this->attributes['response'];
+        return $this->properties['response'];
     }
 
     public function setStream($stream)
@@ -201,7 +201,7 @@ class Response extends Component
 
     public function getHeaders()
     {
-        return $this->attributes['headers'] ?? [];
+        return $this->properties['headers'] ?? [];
     }
 
     public function setHeaders($headers = [], $append = false)

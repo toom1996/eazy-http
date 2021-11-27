@@ -93,11 +93,11 @@ class Controller extends Component
 
     public function getMethod()
     {
-        return $this->attributes['method'];
+        return $this->properties['method'];
     }
 
     public function getAction()
     {
-        return $this->attributes['action'];
+        return $this->properties['action'];
     }
 }

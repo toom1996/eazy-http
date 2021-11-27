@@ -4,7 +4,6 @@ namespace eazy\http;
 
 use eazy\base\Exception;
 use eazy\di\Di;
-use eazy\Eazy;
 use eazy\http\base\BaseApp;
 use eazy\http\di\Container;
 use eazy\http\exceptions\CoroutineException;

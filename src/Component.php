@@ -4,7 +4,7 @@ namespace eazy\http;
 
 use eazy\helpers\BaseArrayHelper;
 use eazy\http\components\UrlManager;
-use eazy\Eazy;
+use eazy\http\Eazy;
 use eazy\http\exceptions\InvalidConfigException;
 use eazy\http\exceptions\UnknownClassException;
 use Swoole\Coroutine;
@@ -12,15 +12,13 @@ use Swoole\Coroutine;
 /**
 // * @property array $context
  * @property array $attributes
+ * @property array $properties
  * @property integer $classId
+ * @property integer $coroutineUid
  */
+#[\Attribute(\Attribute::TARGET_FUNCTION)]
 class Component extends BaseObject
 {
-    /**
-     * Is bootstrap component.
-     * @var
-     */
-    public bool $bootstrap = true;
 
     public function __set($name, $value)
     {
@@ -71,35 +69,28 @@ class Component extends BaseObject
         return App::$attributes[Coroutine::getuid()][$this->classId][$key] ?? null;
     }
 
-    protected function setContext($key, $value)
-    {
-        $oid = $this->getObjectId();
-        if (!isset(App::$pool[App::getUid()][$oid])) {
-            App::$pool[App::getUid()][$oid] = (Object)[];
-        }
-        App::$pool[App::getUid()][$oid]->{$key} = $value;
-    }
-
-    protected function getContext()
-    {
-        $oid = $this->getObjectId();
-        if (!isset(App::$pool[App::getUid()][$this->getObjectId()])) {
-            App::$pool[App::getUid()][$oid] = (Object)[];
-            var_dump((Object)[]);
-            return null;
-        }
-
-        return App::$pool[App::getUid()][$this->getObjectId()];
-    }
-
-    protected function getObjectId(): int
+    public function getClassId(): int
     {
         return spl_object_id($this);
     }
 
-
-    public function getClassId()
+    public function getCoroutineUid()
     {
-        return spl_object_id($this);
+        return Coroutine::getuid();
+    }
+
+    public function getProperties(): array
+    {
+        return Eazy::$attributes[$this->coroutineUid][$this->classId] ?? [];
+    }
+
+    public function getProperty($key)
+    {
+        return $this->properties[$key] ?? null;
+    }
+
+    public function setProperty($key, $value)
+    {
+        return Eazy::$attributes[$this->coroutineUid][$this->classId][$key] = $value;
     }
 }

@@ -22,7 +22,7 @@ class Request extends Component
     
     public function getRequest()
     {
-        return $this->attributes['request'];
+        return $this->properties['request'];
     }
     
     public function getFd()

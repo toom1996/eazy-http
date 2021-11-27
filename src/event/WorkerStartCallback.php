@@ -15,6 +15,7 @@ use eazy\http\components\View;
 use eazy\http\di\Container;
 use eazy\http\exceptions\InvalidConfigException;
 use eazy\http\exceptions\UnknownClassException;
+use eazy\http\helpers\ArrayHelper;
 use eazy\http\helpers\FileHelper;
 use eazy\http\Log;
 use eazy\http\log\LogDispatcher;
@@ -64,15 +65,16 @@ class WorkerStartCallback
      */
     private static function bootstrap($configPath)
     {
-//        $config = require $configPath;
+        $config = require $configPath;
+        var_dump($config);
 //        var_dump($config['components']);
 //        var_dump(self::CORE_COMPONENTS);
 //        foreach (self::CORE_COMPONENTS as $componentName => $component) {
 //            $config['components'][$componentName] = array_merge($component, $config['components'][$componentName]);
 //        }
-////        $config = ($config['components'] + self::CORE_COMPONENTS);
+        $config['components'] = ArrayHelper::merge($config['components'], self::CORE_COMPONENTS);
         var_dump($config);
-        die;
+//        die;
 //        if (is_dir($configPath)) {
 //            foreach (FileHelper::findFiles($configPath, ['only' => ['*.php']]) as $name => $file) {
 //                $config['component'][basename($file, '.php')] = require $file;
