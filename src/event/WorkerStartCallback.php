@@ -6,6 +6,7 @@ use DI\ContainerBuilder;
 use eazy\di\Di;
 use eazy\Eazy;
 use eazy\http\App;
+use eazy\http\Attributes;
 use eazy\http\Bootstrap;
 use eazy\http\components\ErrorHandler;
 use eazy\http\components\Request;
@@ -19,6 +20,7 @@ use eazy\http\helpers\ArrayHelper;
 use eazy\http\helpers\FileHelper;
 use eazy\http\Log;
 use eazy\http\log\LogDispatcher;
+use eazy\http\Scanner;
 use eazy\http\ServiceLocator;
 
 spl_autoload_register(['eazy\http\App','autoload'], true, true);
@@ -28,6 +30,24 @@ class WorkerStartCallback
 
     // Http core component.
     const CORE_COMPONENTS = [
+        'scanner' => [
+            'class' => Scanner::class,
+            'provider' => [
+                [
+                  'class' => Attributes::class,
+                  'arguments' => ['Attributes'],
+                  'path' => ['@eazy'],
+                ],
+                [Attributes::class, [
+                    \eazy\http\Controller::class,
+                    \eazy\http\Request::class,
+                    \eazy\http\Response::class,
+                    \eazy\http\components\ErrorHandler::class,
+                    \eazy\http\components\View::class,
+                    \eazy\http\Router::class,
+                ]]
+            ]
+        ],
         'controller' => ['class' => \eazy\http\Controller::class],
         'request' => ['class' => \eazy\http\Request::class],
         'response' => ['class' => \eazy\http\Response::class],
@@ -72,7 +92,7 @@ class WorkerStartCallback
 //        foreach (self::CORE_COMPONENTS as $componentName => $component) {
 //            $config['components'][$componentName] = array_merge($component, $config['components'][$componentName]);
 //        }
-        $config['components'] = ArrayHelper::merge($config['components'], self::CORE_COMPONENTS);
+        $config['components'] = ArrayHelper::merge(self::CORE_COMPONENTS, $config['components']);
         var_dump($config);
 //        die;
 //        if (is_dir($configPath)) {
@@ -82,13 +102,12 @@ class WorkerStartCallback
 //        }else{
 //            $config = require $configPath;
 //        }
-
+        
         // bootstrap component.
-        foreach ($config['component'] as $componentName => $attributes) {
-            if (isset($attributes['bootstrap']) && $attributes['bootstrap'] !== true) {
-                continue;
+        foreach ($config['components'] as $componentName => $attributes) {
+            if (!Container::$instance->has($componentName)) {
+                Container::$instance->set($componentName, $attributes);   
             }
-            Container::$instance->set($componentName, $attributes);
         }
 
         // set aliases.
