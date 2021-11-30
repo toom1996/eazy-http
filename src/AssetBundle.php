@@ -20,19 +20,19 @@ class AssetBundle extends BaseObject
     public function init()
     {
         if ($this->sourcePath !== null) {
-            $this->sourcePath = rtrim(App::getAlias($this->sourcePath), '/\\');
+            $this->sourcePath = rtrim(Eazy::getAlias($this->sourcePath), '/\\');
         }
         if ($this->basePath !== null) {
-            $this->basePath = rtrim(App::getAlias($this->basePath), '/\\');
+            $this->basePath = rtrim(Eazy::getAlias($this->basePath), '/\\');
         }
         if ($this->baseUrl !== null) {
-            $this->baseUrl = rtrim(App::getAlias($this->baseUrl), '/');
+            $this->baseUrl = rtrim(Eazy::getAlias($this->baseUrl), '/');
         }
     }
 
     public static function register()
     {
-        App::$component->view->registerAssetBundle(get_called_class());
+        Eazy::$component->view->registerAssetBundle(get_called_class());
     }
 
     public function publish($bundle)

@@ -19,6 +19,11 @@ use Swoole\Coroutine;
 #[\Attribute(\Attribute::TARGET_FUNCTION)]
 class Component extends BaseObject
 {
+    /**
+     * Is bootstrap component.
+     * @var bool 
+     */
+    public bool $bootstrap = true;
 
     public function __set($name, $value)
     {
@@ -49,48 +54,5 @@ class Component extends BaseObject
         }
 
         throw new UnknownClassException('Getting unknown property: ' . get_class($this) . '::' . $name);
-    }
-    
-    protected function setAttribute($key, $value)
-    {
-        return App::$attributes[Coroutine::getuid()][$this->classId][$key] = $value;
-    }
-
-    public function getAttributes()
-    {
-        echo __FUNCTION__ . get_called_class() . PHP_EOL;
-//        var_dump(debug_print_backtrace());
-        echo PHP_EOL;
-        return App::$attributes[Coroutine::getuid()][$this->classId] ?? [];
-    }
-    
-    public function getAttribute($key)
-    {
-        return App::$attributes[Coroutine::getuid()][$this->classId][$key] ?? null;
-    }
-
-    public function getClassId(): int
-    {
-        return spl_object_id($this);
-    }
-
-    public function getCoroutineUid()
-    {
-        return Coroutine::getuid();
-    }
-
-    public function getProperties(): array
-    {
-        return Eazy::$attributes[$this->coroutineUid][$this->classId] ?? [];
-    }
-
-    public function getProperty($key)
-    {
-        return $this->properties[$key] ?? null;
-    }
-
-    public function setProperty($key, $value)
-    {
-        return Eazy::$attributes[$this->coroutineUid][$this->classId][$key] = $value;
     }
 }

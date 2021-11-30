@@ -2,17 +2,17 @@
 
 namespace eazy\http\components;
 
-use eazy\Eazy;
 use eazy\http\App;
 use eazy\http\Component;
 use eazy\http\ContextComponent;
+use eazy\http\Eazy;
 use eazy\http\exceptions\InvalidConfigException;
 use eazy\http\exceptions\ViewNotFoundException;
 
 /**
  * @property string $layout
  */
-class View extends Component
+class View extends ContextComponent
 {
     /**
      * Default layout file path.
@@ -52,13 +52,13 @@ class View extends Component
      *
      * ```php
      * // render based on alias.
-     * App::$component->view->render('@app/views/index');
+     * Eazy::$component->view->render('@app/views/index');
      * 
      * // render based on file path.
-     * App::$component->view->render('index');
+     * Eazy::$component->view->render('index');
      * 
      * // render with params.
-     * App::$component->view->render('index', ['foo' => 'bar']);
+     * Eazy::$component->view->render('index', ['foo' => 'bar']);
      * ```
      * @param string $view Render file path.
      * @param  array  $params the parameters (name-value pairs) that should be made available in the view.
@@ -90,23 +90,23 @@ class View extends Component
 
     public function getTitle()
     {
-        return $this->getAttribute('title') ?: App::;
+        return $this->properties['title'] ?: '';
     }
 
     public function setTitle(string $title)
     {
-        $this->setAttribute('title', $title);
+        $this->setProperty('title', $title);
         return $this;
     }
 
     public function getLayout()
     {
-        return $this->context->layout ?? $this->defaultLayout;
+        return $this->properties['layout'] ?? $this->defaultLayout;
     }
 
     public function setLayout(string $path)
     {
-        $this->context->layout = $path;
+        $this->setProperty('layout', $path);
         return $this;
     }
 
@@ -119,7 +119,7 @@ class View extends Component
     public function findLayoutFile()
     {
         if (strncmp($this->layout, '@', 1) === 0) {
-            $file = App::getAlias($this->layout);
+            $file = Eazy::getAlias($this->layout);
         }elseif (strncmp($this->layout, '/', 1) === 0) {
             $file = $this->defaultLayoutPath . DIRECTORY_SEPARATOR . substr($this->layout, 1);
         } else {
@@ -129,7 +129,9 @@ class View extends Component
         if (pathinfo($file, PATHINFO_EXTENSION) !== '') {
             return $file;
         }
+
         $path = $file . '.php';
+
         return $path;
     }
 
@@ -141,7 +143,7 @@ class View extends Component
     public function findViewFile($view)
     {
         if (strncmp($view, '@', 1) === 0) { // e.g. "@app/views/main"
-            $file = App::getAlias($view);
+            $file = Eazy::getAlias($view);
         } elseif (strncmp($view, '/', 1) === 0) { // e.g. "/site/index"
             $file = $this->defaultViewPath . DIRECTORY_SEPARATOR . substr($view, 1);
         } else {
@@ -159,7 +161,7 @@ class View extends Component
    
     public function renderFile($viewFile, $params, $context = null)
     {
-        $viewFile = $requestedFile = App::getAlias($viewFile);
+        $viewFile = $requestedFile = Eazy::getAlias($viewFile);
         var_dump($viewFile);
         if (!is_file($viewFile)) {
             throw new ViewNotFoundException("The view file does not exist: $viewFile");
@@ -272,7 +274,7 @@ class View extends Component
             $config['class'] = $name;
         }
         /* @var $bundle AssetBundle */
-        $bundle = App::createObject($config);
+        $bundle = Eazy::createObject($config);
         if ($publish) {
             $bundle->publish($this);
         }

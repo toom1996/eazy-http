@@ -7,10 +7,10 @@ namespace eazy\http\event;
 use Co\Context;
 use DI\Container;
 use eazy\di\Di;
-use eazy\Eazy;
 use eazy\http\App;
 use eazy\http\Components;
 use eazy\http\components\RequestHandler;
+use eazy\http\Eazy;
 use eazy\http\Module;
 use eazy\http\Router;
 use eazy\http\RouterDispatcher;
@@ -32,7 +32,6 @@ class RequestCallback extends Module
             }
             $this->response->send();
         }catch (\Swoole\ExitException $exception){
-            var_dump($exception);
             $this->response->content = $exception->getStatus();
         }catch (\Throwable $exception) {
             $this->errorHandler->handleException($exception);
@@ -40,7 +39,7 @@ class RequestCallback extends Module
             $this->response->send();
         }
 
-        unset(App::$attributes[Coroutine::getuid()]);
+        unset(Eazy::$attributes[Coroutine::getuid()]);
         echo __FUNCTION__;
     }
 }

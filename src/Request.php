@@ -4,7 +4,6 @@ namespace eazy\http;
 
 use DI\Test\PerformanceTest\Get\C;
 use eazy\di\Di;
-use eazy\Eazy;
 use eazy\helpers\BaseArrayHelper;
 use eazy\http\base\BaseComponent;
 use eazy\http\di\Container;
@@ -17,7 +16,7 @@ use Swoole\Coroutine;
  * @property array $header
  * @property array $server
  */
-class Request extends Component
+class Request extends ContextComponent
 {
     
     public function getRequest()
@@ -84,8 +83,8 @@ class Request extends Component
     
     public function resolve(\Swoole\Http\Request $request)
     {
-        $this->setAttribute('request', $request);
-        [$handler, $param] = App::$component->router->parseRequest();
+        $this->setProperty('request', $request);
+        [$handler, $param] = Eazy::$component->router->parseRequest();
 
         var_dump('HANDLER') . PHP_EOL;
         var_dump($handler);

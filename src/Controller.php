@@ -6,7 +6,6 @@ namespace eazy\http;
 
 use app\controllers\SiteController;
 use eazy\console\StdoutLogger;
-use eazy\Eazy;
 use eazy\helpers\BaseFileHelper;
 use eazy\http\di\Container;
 use eazy\http\exceptions\InvalidConfigException;
@@ -18,7 +17,7 @@ use Swoole\FastCGI\Record\Stdout;
  * @property string $action
  * @property \eazy\http\components\View $view
  */
-class Controller extends Component
+class Controller extends ContextComponent
 {
     /**
      * Controller map.
@@ -44,7 +43,7 @@ class Controller extends Component
         if (isset($this->_controllerMap[$handler])) {
             $controllerMap = $this->_controllerMap[$handler];
         }else{
-            $handlerAlias = App::getAlias($handler);
+            $handlerAlias = Eazy::getAlias($handler);
             $params = explode('/', $handlerAlias);
 
             // find controller and action.
@@ -78,17 +77,17 @@ class Controller extends Component
 
         echo 'return controller';
         var_dump($this->_controllerMap[$handler]);
-        return App::createObject(...$this->_controllerMap[$handler]);
+        return Eazy::createObject(...$this->_controllerMap[$handler]);
     }
 
     public function setAction($action)
     {
-        $this->setAttribute('action', $action);
+        $this->setProperty('action', $action);
     }
 
     public function setMethod($method)
     {
-        $this->setAttribute('method', $method);
+        $this->setProperty('method', $method);
     }
 
     public function getMethod()

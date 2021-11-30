@@ -40,8 +40,8 @@ class Eazy
      * Support create an object based on class name or configuration of params.
      * ```php
      * // create object based on class name.
-     * $object = App::createObject('\eazy\http\Request');
-     * $object = App::createObject(Request::class);
+     * $object = Eazy::createObject('\eazy\http\Request');
+     * $object = Eazy::createObject(Request::class);
      *
      * // create object
      * @param $definition

@@ -10,7 +10,7 @@ class RequestHandler extends BaseComponent
 {
     public function handleRequest()
     {
-        [$handler, $params] = App::getRequest()->resolve();
+        [$handler, $params] = Eazy::getRequest()->resolve();
         $result = $this->runAction($handler);
 //        $result = $this->runAction($handler);
 //        $response = $this->getResponse();

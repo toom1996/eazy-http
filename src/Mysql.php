@@ -2,6 +2,7 @@
 
 namespace eazy\http;
 
-class Scanner extends Component
+class Mysql extends Component
 {
+
 }

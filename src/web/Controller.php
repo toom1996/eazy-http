@@ -5,9 +5,15 @@ namespace eazy\http\web;
 use eazy\http\App;
 use eazy\http\BaseController;
 use eazy\http\Component;
+use eazy\http\components\View;
+use eazy\http\Eazy;
 
+/**
+ * @property \eazy\http\components\View $view
+ */
 class Controller extends \eazy\http\Controller
 {
+    protected ?string $layout = null;
 
     public function runAction($action)
     {
@@ -32,9 +38,18 @@ class Controller extends \eazy\http\Controller
         echo 'afterAction -> ' . $action;
         echo 'afterAction -> ' . $result;
     }
-    
+
+    /**
+     * Get view component from web controller.
+     * @return \eazy\http\components\View
+     */
     public function getView()
     {
-        return App::$component->view;
+        $view = Eazy::$component->view;
+        if ($this->layout) {
+            $view->setLayout($this->layout);
+        }
+        
+        return $view;
     }
 }

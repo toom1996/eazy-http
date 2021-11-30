@@ -15,7 +15,7 @@ use Swoole\Coroutine;
  * @property bool $isSend
  * @property \Swoole\Http\Response $context
  */
-class Response extends Component
+class Response extends ContextComponent
 {
     /**
      * Default response status code.
@@ -115,7 +115,7 @@ class Response extends Component
     {
         // Set isSend is true.
         // Prevent duplicate output.
-        $this->setAttribute('isSend', true);
+        $this->setProperty('isSend', true);
         if (!$this->content) {
             $this->content = ob_get_clean();
         }
@@ -163,7 +163,7 @@ class Response extends Component
 
     public function setStatusCode($code)
     {
-        $this->setAttribute('statusCode', $code);
+        $this->setProperty('statusCode', $code);
         return $this;
     }
 
@@ -174,7 +174,7 @@ class Response extends Component
 
     public function setContent($content)
     {
-        $this->setAttribute('content', $content);
+        $this->setProperty('content', $content);
         return $this;
     }
 
@@ -185,7 +185,7 @@ class Response extends Component
 
     public function setResponse(\Swoole\Http\Response $response)
     {
-        $this->setAttribute('response', $response);
+        $this->setProperty('response', $response);
     }
 
     public function getResponse()
@@ -195,7 +195,7 @@ class Response extends Component
 
     public function setStream($stream)
     {
-        $this->setAttribute('stream', $stream);
+        $this->setProperty('stream', $stream);
         return $this;
     }
 
@@ -209,7 +209,7 @@ class Response extends Component
         if ($append) {
             $headers = array_merge($this->headers, $headers);
         }
-        $this->setAttribute('headers', $headers);
+        $this->setProperty('headers', $headers);
 
         return $this;
     }

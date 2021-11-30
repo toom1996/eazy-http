@@ -12,8 +12,8 @@ use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use http\Exception\BadMethodCallException;
 use function FastRoute\simpleDispatcher;
-
-#[\Attribute] class Router extends Component
+#[Di]
+class Router extends ContextComponent
 {
     private $_adapter;
 
@@ -31,8 +31,7 @@ use function FastRoute\simpleDispatcher;
     {
         $webRoute = $this->route;
         return simpleDispatcher(function (RouteCollector $controller) use ($webRoute) {
-            var_dump('---------------------');
-            foreach ($webRoute as $prefix => $rules) {
+            foreach ($this->route as $prefix => $rules) {
                 echo '~~';
                 if (count($rules) == count($rules, COUNT_RECURSIVE)) {
                     [$method, $route, $handler] = $this->parseRule($rules);

@@ -4,6 +4,7 @@ namespace eazy\http\di;
 
 use eazy\base\BaseObject;
 use eazy\http\App;
+use eazy\http\ContextComponent;
 use eazy\http\exceptions\InvalidConfigException;
 use eazy\http\Request;
 use Psr\Container\ContainerInterface;
@@ -42,12 +43,12 @@ class Container extends BaseObject implements ContainerInterface
      * ]);
      * ```
      * @param string $name
-     * @param  array  $params
+     * @param mixed $params
      *
      * @return $this
      * @throws \eazy\http\exceptions\InvalidConfigException
      */
-    public function set(string $name, array $params = [])
+    public function set(string $name, $params = [])
     {
         $definition = $this->normalizeDefinition($name, $params);
         $this->_singletons[$name] = $this->build($definition, $params);
@@ -86,6 +87,9 @@ class Container extends BaseObject implements ContainerInterface
 
     protected function makeObject($definition)
     {
+        if (is_object($definition)) {
+            return $definition;
+        }
         $ref = new \ReflectionClass($definition['class']);
         unset($definition['class']);
         return $ref->newInstanceArgs([$definition]);
@@ -103,7 +107,16 @@ class Container extends BaseObject implements ContainerInterface
     public function normalizeDefinition($definition, $params)
     {
         if (is_string($definition)) {
+            if (is_object($params)) {
+                return $params;
+            }
             return array_merge(['class' => $definition], $params);
+        }elseif (is_array($definition)) {
+            if (!isset($definition['class'])) {
+                throw new InvalidConfigException("Invalid definition. must be set class params.");
+            }
+
+            return $definition;
         }
 
         throw new InvalidConfigException("Unsupported definition type for \"$class\": " . gettype($definition));

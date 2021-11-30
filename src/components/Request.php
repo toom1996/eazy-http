@@ -74,7 +74,7 @@ class Request extends BaseObject
      */
     public function resolve()
     {
-        [$handler, $param] = App::$get->getUrlManager()->parseRequest();
+        [$handler, $param] = Eazy::$get->getUrlManager()->parseRequest();
         $this->setQueryParams($param + $this->getQueryParams());
         return [$handler, $this->getQueryParams()];
     }
