@@ -165,10 +165,10 @@ $this->title = $exception->getMessage();
             <?php if ($exception instanceof \eazy\http\exceptions\HttpException): ?>
                 <?= $handler->createHttpStatusLink($exception->getCode(), $handler->htmlEncode($exception->getName()));?>
             <?php else: ?>
-                <?= $handler->getExceptionName($exception) !== null
-                    ? '<span>' . $handler->htmlEncode($exception->getName()) . '</span>' . ' &ndash; ' . $handler->addTypeLinks(get_class($exception))
-                    : '<span>' . $handler->htmlEncode(get_class($exception)) . '</span>';
-                ; ?>
+<!--                --><?//= $handler->getExceptionName($exception) !== null
+//                    ? '<span>' . $handler->htmlEncode($exception->getName()) . '</span>' . ' &ndash; ' . $handler->addTypeLinks(get_class($exception))
+//                    : '<span>' . $handler->htmlEncode(get_class($exception)) . '</span>';
+//                ; ?>
             <?php endif; ?>
         </h1>
         <p class="error-message"><?= nl2br($handler->htmlEncode($exception->getMessage())) ?></p>

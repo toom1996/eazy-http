@@ -119,7 +119,7 @@ class Response extends ContextComponent
         if (!$this->content) {
             $this->content = ob_get_clean();
         }
-        var_dump($this->response);
+//        var_dump($this->response);
         $this->response->setStatusCode($this->statusCode);
         $this->response->end($this->content);
     }

@@ -17,6 +17,7 @@ use eazy\http\components\UrlManager;
 use eazy\http\components\View;
 use eazy\http\Connection;
 use eazy\http\ContextComponent;
+use eazy\http\databases\DbConnection;
 use eazy\http\di\Container;
 use eazy\http\Eazy;
 use eazy\http\exceptions\InvalidConfigException;
@@ -52,7 +53,7 @@ class WorkerStartCallback
         'errorHandler' => ['class' => \eazy\http\components\ErrorHandler::class],
         'view' => ['class' => \eazy\http\components\View::class],
         'router' => ['class' => \eazy\http\Router::class],
-        'db' => ['class' => Connection::class],
+        'db' => ['class' => DbConnection::class],
     ];
 
     public static function onWorkerStart($server, int $workerId)

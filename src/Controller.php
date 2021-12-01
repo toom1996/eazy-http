@@ -69,14 +69,14 @@ class Controller extends ContextComponent
             $classNamespace = BaseFileHelper::getNamespace($handlerFile);
             $className = '\\' . $classNamespace . '\\' . basename(str_replace('.php', '', $handlerFile));
 
-            echo 'new Controller' . PHP_EOL;
+//            echo 'new Controller' . PHP_EOL;
             $this->_controllerMap[$handler] = [
                 $className, $config
             ];
         }
 
-        echo 'return controller';
-        var_dump($this->_controllerMap[$handler]);
+//        echo 'return controller';
+//        var_dump($this->_controllerMap[$handler]);
         return Eazy::createObject(...$this->_controllerMap[$handler]);
     }
 

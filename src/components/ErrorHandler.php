@@ -75,7 +75,7 @@ class ErrorHandler extends ContextComponent
             if ($useErrorView && $this->errorAction !== null) {
                 $result = Eazy::$component->controller->runAction($this->errorAction);
                 $response->setContent($result);
-                var_dump($result);
+//                var_dump($result);
             } elseif ($response->format === Response::FORMAT_HTML) {
                 if ($this->shouldRenderSimpleHtml()) {
                     // AJAX request

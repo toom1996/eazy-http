@@ -162,7 +162,7 @@ class View extends ContextComponent
     public function renderFile($viewFile, $params, $context = null)
     {
         $viewFile = $requestedFile = Eazy::getAlias($viewFile);
-        var_dump($viewFile);
+//        var_dump($viewFile);
         if (!is_file($viewFile)) {
             throw new ViewNotFoundException("The view file does not exist: $viewFile");
         }

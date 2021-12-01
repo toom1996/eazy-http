@@ -40,6 +40,6 @@ class RequestCallback extends Module
         }
 
         unset(Eazy::$attributes[Coroutine::getuid()]);
-        echo __FUNCTION__;
+//        echo __FUNCTION__;
     }
 }

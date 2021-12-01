@@ -2,13 +2,23 @@
 
 namespace eazy\http;
 
+use Swoole\Coroutine;
 use Swoole\Database\PDOConfig;
 use Swoole\Database\PDOPool;
 
+/**
+ * @property \PDOStatement $statement
+ * @property \PDO $pdo
+ */
 class Connection extends ContextComponent
 {
 
-    public $connection;
+    public $t;
+
+    /**
+     * @var PDOPool
+     */
+    private $connection;
 
     public $dsn;
     /**
@@ -23,24 +33,63 @@ class Connection extends ContextComponent
     public function init()
     {
         $this->connection = new PDOPool((new PDOConfig())
-            ->withHost('127.0.0.1')
+            ->withHost('192.168.10.139')
             ->withPort(3306)
             // ->withUnixSocket('/tmp/mysql.sock')
             ->withDbName('mjb')
             ->withCharset('utf8mb4')
             ->withUsername('root')
             ->withPassword('root')
-        );
+        , 1024);
 
         var_dump($this->connection);
     }
 
-    public function createCommand()
+    public function createCommand(string $sql)
     {
-        $pdo = $this->connection->get();
-//        $pdo->prepare('SELECT * FROM mjb_order_custom_xhs WHERE id = 50');
-//        $result = $statement->execute();
-        var_dump($result);
+        $this->setPdo($this->connection->get());
+        $this->statement = $this->pdo->prepare($sql);
+        if (!$this->statement->execute()) {
+            // TODO throw exception.
+            echo 'statement->execute() fail';
+        }
+        return $this;
 //        $this->connection->put($pdo);
+    }
+
+    public function setPdo($val)
+    {
+        $this->setProperty('pdo', $val);
+    }
+
+    public function getPdo()
+    {
+        return $this->properties['pdo'];
+    }
+
+    public function setStatement($value)
+    {
+        $this->setProperty('statement', $value);
+    }
+
+    public function getStatement()
+    {
+        return $this->properties['statement'];
+    }
+
+    public function all()
+    {
+        return $this->statement->fetchAll();
+    }
+
+    public function one()
+    {
+//        Coroutine::defer(function () {
+//            echo 'defer';
+//        });
+        $this->t ++;
+        $r = $this->all()[0] ?? [];
+        $this->connection->put($this->pdo);
+        return $r;
     }
 }

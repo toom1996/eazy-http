@@ -86,9 +86,9 @@ class Request extends ContextComponent
         $this->setProperty('request', $request);
         [$handler, $param] = Eazy::$component->router->parseRequest();
 
-        var_dump('HANDLER') . PHP_EOL;
-        var_dump($handler);
-        var_dump($param);
+//        var_dump('HANDLER') . PHP_EOL;
+//        var_dump($handler);
+//        var_dump($param);
         return $handler;
     }
 }
