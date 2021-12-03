@@ -33,7 +33,7 @@ class Connection extends ContextComponent
     public function init()
     {
         $this->connection = new PDOPool((new PDOConfig())
-            ->withHost('192.168.10.139')
+            ->withHost('192.168.10.82')
             ->withPort(3306)
             // ->withUnixSocket('/tmp/mysql.sock')
             ->withDbName('mjb')
@@ -45,8 +45,9 @@ class Connection extends ContextComponent
         var_dump($this->connection);
     }
 
-    public function createCommand(string $sql)
+    public function createCommand(string $sql = null)
     {
+        
         $this->setPdo($this->connection->get());
         $this->statement = $this->pdo->prepare($sql);
         if (!$this->statement->execute()) {
