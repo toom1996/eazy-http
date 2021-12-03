@@ -25,7 +25,7 @@ class Component extends BaseObject
      */
     public bool $bootstrap = true;
 
-    public function __set($name, $value)
+    public function __set(string $name, $value)
     {
         $setter = 'set' . $name;
         if (method_exists($this, $setter)) {
