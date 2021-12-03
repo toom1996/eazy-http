@@ -19,7 +19,6 @@ use eazy\http\exceptions\InvalidConfigException;
  */
 class ServiceLocator extends BaseComponent
 {
-    
     public function has(string $id)
     {
         return Container::$instance->has($id);
