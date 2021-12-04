@@ -41,7 +41,7 @@ class ContextComponent extends Component
             return $this->$getter();
         }
         
-        $this->getProperty($name);
+       return  $this->getProperty($name);
     }
 
     /**
