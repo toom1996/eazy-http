@@ -18,7 +18,7 @@ class Controller extends \eazy\http\Controller
     public function runAction($action)
     {
         if ($this->beforeAction($this->action)) {
-            $result = $this->{$action}();
+            $result = call_user_func([$this, $action]);
         }
         $this->afterAction($action, $result);
 

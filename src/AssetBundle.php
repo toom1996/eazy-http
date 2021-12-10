@@ -30,15 +30,18 @@ class AssetBundle extends BaseObject
         }
     }
 
-    public static function register()
+    /**
+     * @param $view \eazy\http\components\View
+     */
+    public static function register($view)
     {
-        Eazy::$component->view->registerAssetBundle(get_called_class());
+        $view->registerAssetBundle(get_called_class());
     }
 
     public function publish($bundle)
     {
         if ($this->sourcePath !== null && !isset($this->basePath, $this->baseUrl)) {
-            list($this->basePath, $this->baseUrl) = $bundle->publish($this->sourcePath, $this->publishOptions);
+            [$this->basePath, $this->baseUrl] = $bundle->publish($this->sourcePath, $this->publishOptions);
         }
 
         if (isset($this->basePath, $this->baseUrl) && ($converter = $am->getConverter()) !== null) {

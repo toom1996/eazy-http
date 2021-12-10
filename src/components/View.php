@@ -3,6 +3,7 @@
 namespace eazy\http\components;
 
 use eazy\http\App;
+use eazy\http\AssetBundle;
 use eazy\http\Component;
 use eazy\http\ContextComponent;
 use eazy\http\Eazy;
@@ -207,35 +208,28 @@ class View extends ContextComponent
     public function registerAssetBundle($name)
     {
         if (!isset($this->assetBundles[$name])) {
-            $am = $this->getAssetManager();
-            $bundle = $this->getBundle($name);
+//            $am = $this->getAssetManager();
+            $bundle = $this->loadBundle($name);
             $this->assetBundles[$name] = false;
             // register dependencies
             $pos = isset($bundle->jsOptions['position']) ? $bundle->jsOptions['position'] : null;
-            foreach ($bundle->depends as $dep) {
-                $this->registerAssetBundle($dep, $pos);
-            }
             $this->assetBundles[$name] = $bundle;
-        } elseif ($this->assetBundles[$name] === false) {
-            throw new InvalidConfigException("A circular dependency is detected for bundle '$name'.");
-        } else {
-            $bundle = $this->assetBundles[$name];
         }
-
-        if ($position !== null) {
-            $pos = isset($bundle->jsOptions['position']) ? $bundle->jsOptions['position'] : null;
-            if ($pos === null) {
-                $bundle->jsOptions['position'] = $pos = $position;
-            } elseif ($pos > $position) {
-                throw new InvalidConfigException("An asset bundle that depends on '$name' has a higher javascript file position configured than '$name'.");
-            }
-            // update position for all dependencies
-            foreach ($bundle->depends as $dep) {
-                $this->registerAssetBundle($dep, $pos);
-            }
-        }
-
-        return $bundle;
+//
+//        if ($position !== null) {
+//            $pos = isset($bundle->jsOptions['position']) ? $bundle->jsOptions['position'] : null;
+//            if ($pos === null) {
+//                $bundle->jsOptions['position'] = $pos = $position;
+//            } elseif ($pos > $position) {
+//                throw new InvalidConfigException("An asset bundle that depends on '$name' has a higher javascript file position configured than '$name'.");
+//            }
+//            // update position for all dependencies
+//            foreach ($bundle->depends as $dep) {
+//                $this->registerAssetBundle($dep, $pos);
+//            }
+//        }
+//
+        return $this->assetBundles[$name];;
     }
 
     public function beginPage()
@@ -254,30 +248,27 @@ class View extends ContextComponent
 
     public function getBundle($name, $publish = true)
     {
-        if (!isset($this->bundles[$name])) {
-            return $this->bundles[$name] = $this->loadBundle($name, [], $publish);
-        }
-//        elseif ($this->bundles[$name] instanceof AssetBundle) {
-//            return $this->bundles[$name];
-//        } elseif (is_array($this->bundles[$name])) {
+//        if (!isset($this->bundles[$name])) {
+//            return $this->bundles[$name] = $this->loadBundle($name, [], $publish);
+//        }
+//        else
+        if ($this->bundles[$name] instanceof AssetBundle) {
+            return $this->bundles[$name];
+        } elseif (is_array($this->bundles[$name])) {
 //            return $this->bundles[$name] = $this->loadBundle($name, $this->bundles[$name], $publish);
 //        } elseif ($this->bundles[$name] === false) {
 //            return $this->loadDummyBundle($name);
-//        }
+        }
 
         throw new InvalidConfigException("Invalid asset bundle configuration: $name");
     }
 
-    protected function loadBundle($name, $config = [], $publish = true)
+    protected function loadBundle($name)
     {
-        if (!isset($config['class'])) {
-            $config['class'] = $name;
-        }
-        /* @var $bundle AssetBundle */
-        $bundle = Eazy::createObject($config);
-        if ($publish) {
-            $bundle->publish($this);
-        }
+        $bundle = Eazy::createObject($name);
+//        if ($publish) {
+//            $bundle->publish($this);
+//        }
 
         return $bundle;
     }

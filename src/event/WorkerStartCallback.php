@@ -51,7 +51,7 @@ class WorkerStartCallback
         'request' => ['class' => \eazy\http\Request::class],
         'response' => ['class' => \eazy\http\Response::class],
         'errorHandler' => ['class' => \eazy\http\components\ErrorHandler::class],
-        'view' => ['class' => \eazy\http\components\View::class],
+        'view' => ['class' => \eazy\http\web\View::class],
         'router' => ['class' => \eazy\http\Router::class],
         'db' => ['class' => DbConnection::class],
     ];

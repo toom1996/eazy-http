@@ -132,8 +132,7 @@ class DbConnection extends ContextComponent
             if (!$result) {
                 throw new RuntimeException('Execute failed');
             }
-
-            $result = $this->statement->$method();
+            $result = call_user_func_array([$this->pdoStatement, $method], (array) \PDO::FETCH_ASSOC);
         }catch (\Throwable $th) {
                 var_dump($th->getMessage());
         }
