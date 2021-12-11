@@ -33,8 +33,6 @@ class View extends ContextComponent
      */
     public string $defaultViewPath = '';
 
-    public $assetBundles = [];
-
     /**
      * Defined default path.
      */
@@ -203,34 +201,7 @@ class View extends ContextComponent
             throw $e;
         }
     }
-
-
-    public function registerAssetBundle($name)
-    {
-        if (!isset($this->assetBundles[$name])) {
-//            $am = $this->getAssetManager();
-            $bundle = $this->loadBundle($name);
-            $this->assetBundles[$name] = false;
-            // register dependencies
-            $pos = isset($bundle->jsOptions['position']) ? $bundle->jsOptions['position'] : null;
-            $this->assetBundles[$name] = $bundle;
-        }
-//
-//        if ($position !== null) {
-//            $pos = isset($bundle->jsOptions['position']) ? $bundle->jsOptions['position'] : null;
-//            if ($pos === null) {
-//                $bundle->jsOptions['position'] = $pos = $position;
-//            } elseif ($pos > $position) {
-//                throw new InvalidConfigException("An asset bundle that depends on '$name' has a higher javascript file position configured than '$name'.");
-//            }
-//            // update position for all dependencies
-//            foreach ($bundle->depends as $dep) {
-//                $this->registerAssetBundle($dep, $pos);
-//            }
-//        }
-//
-        return $this->assetBundles[$name];;
-    }
+    
 
     public function beginPage()
     {
@@ -261,16 +232,6 @@ class View extends ContextComponent
         }
 
         throw new InvalidConfigException("Invalid asset bundle configuration: $name");
-    }
-
-    protected function loadBundle($name)
-    {
-        $bundle = Eazy::createObject($name);
-//        if ($publish) {
-//            $bundle->publish($this);
-//        }
-
-        return $bundle;
     }
 
 }

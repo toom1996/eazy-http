@@ -41,7 +41,7 @@ class ContextComponent extends Component
             return $this->$getter();
         }
         
-       return  $this->getProperty($name);
+       return $this->getProperties($name);
     }
 
     /**
@@ -68,8 +68,12 @@ class ContextComponent extends Component
      * Returns cortounie properties.
      * @return array
      */
-    public function getProperties(): array
+    public function getProperties($key = null): array
     {
+        if ($key) {
+            return Eazy::$attributes[$this->coroutineUid][$this->classId][$key] ?? [];
+        }
+
         return Eazy::$attributes[$this->coroutineUid][$this->classId] ?? [];
     }
 
