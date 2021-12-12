@@ -2,8 +2,10 @@
 
 namespace eazy\http\web;
 
+use eazy\http\AssetBundle;
 use eazy\http\Eazy;
 use eazy\http\helpers\ArrayHelper;
+use eazy\http\helpers\HtmlHelper;
 
 /**
  * @property array $jsFiles
@@ -33,10 +35,11 @@ class View extends \eazy\http\components\View
 
     protected function renderHeadHtml()
     {
-//        $lines = [];
-//        if (!empty($this->metaTags)) {
-//            $lines[] = implode("\n", $this->metaTags);
-//        }
+        $lines = [];
+        var_dump($this->cssFiles);
+        if ($this->cssFiles) {
+            $lines[] = implode("\n", $this->cssFiles);
+        }
 //
 //        if (!empty($this->linkTags)) {
 //            $lines[] = implode("\n", $this->linkTags);
@@ -53,8 +56,7 @@ class View extends \eazy\http\components\View
 //        if (!empty($this->js[self::POS_HEAD])) {
 //            $lines[] = Html::script(implode("\n", $this->js[self::POS_HEAD]));
 //        }
-
-        return '1231231231231231232';
+        var_dump($lines);
         return empty($lines) ? '' : implode("\n", $lines);
     }
 
@@ -83,8 +85,8 @@ class View extends \eazy\http\components\View
 //        $this->assetBundles[$name] = false;
         // register dependencies
 //        $pos = isset($bundle->jsOptions['position']) ? $bundle->jsOptions['position'] : null;
-        $this->registerBundleFile('css', $name,  $bundle->css);
-        $this->registerBundleFile('js', $name,  $bundle->js);
+        $this->registerBundleCssFiles($bundle);
+//        $this->registerBundleFiles('js', $name,  $bundle->js);
         //
         //        if ($position !== null) {
         //            $pos = isset($bundle->jsOptions['position']) ? $bundle->jsOptions['position'] : null;
@@ -100,12 +102,15 @@ class View extends \eazy\http\components\View
         //        }
         //
         var_dump($this->assetBundles);
-        return $this->assetBundles[$name];;
+        $this->loadBundleFiles($name);
+        return $this->assetBundles[$name];
     }
 
-    public function registerBundleFile($type, $bundleName, $files)
+    public function registerBundleCssFiles(AssetBundle $bundle)
     {
-        $assetBundle[$bundleName][$type] = $files;
+        foreach ($bundle->css as $file) {
+            $assetBundle[$bundle::class]['css'][] = HtmlHelper::cssFile($file);
+        }
 
         $this->assetBundles = ArrayHelper::merge($this->assetBundles, $assetBundle);
     }
@@ -114,9 +119,16 @@ class View extends \eazy\http\components\View
     {
         $bundle = Eazy::createObject($name);
         //        if ($publish) {
-        //            $bundle->publish($this);
+//        $bundle->publish();
         //        }
 
         return $bundle;
+    }
+
+    public function loadBundleFiles($name)
+    {
+        $bundleFiles = $this->assetBundles[$name];
+//        $this->jsFiles = $bundleFiles['js'];
+        $this->cssFiles = $bundleFiles['css'];
     }
 }

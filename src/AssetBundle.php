@@ -2,6 +2,8 @@
 
 namespace eazy\http;
 
+use eazy\http\helpers\UrlHelper;
+
 class AssetBundle extends BaseObject
 {
     public $sourcePath;
@@ -28,6 +30,8 @@ class AssetBundle extends BaseObject
         if ($this->baseUrl !== null) {
             $this->baseUrl = rtrim(Eazy::getAlias($this->baseUrl), '/');
         }
+
+        $this->publish();
     }
 
     /**
@@ -38,37 +42,47 @@ class AssetBundle extends BaseObject
         $view->registerAssetBundle(get_called_class());
     }
 
-    public function publish($bundle)
+    public function publish()
     {
-        if ($this->sourcePath !== null && !isset($this->basePath, $this->baseUrl)) {
-            [$this->basePath, $this->baseUrl] = $bundle->publish($this->sourcePath, $this->publishOptions);
-        }
+        echo __FUNCTION__;
 
-        if (isset($this->basePath, $this->baseUrl) && ($converter = $am->getConverter()) !== null) {
+//        if ($this->sourcePath !== null && !isset($this->basePath, $this->baseUrl)) {
+//            [$this->basePath, $this->baseUrl] = $bundle->publish($this->sourcePath, $this->publishOptions);
+//        }
+//
+        if (isset($this->basePath, $this->baseUrl)) {
             foreach ($this->js as $i => $js) {
-                if (is_array($js)) {
-                    $file = array_shift($js);
-                    if (Url::isRelative($file)) {
-                        $js = ArrayHelper::merge($this->jsOptions, $js);
-                        array_unshift($js, $converter->convert($file, $this->basePath));
-                        $this->js[$i] = $js;
-                    }
-                } elseif (Url::isRelative($js)) {
-                    $this->js[$i] = $converter->convert($js, $this->basePath);
+                if (UrlHelper::isRelative($js)) {
+                    $this->js[$i] = $this->convert($js);
                 }
             }
             foreach ($this->css as $i => $css) {
-                if (is_array($css)) {
-                    $file = array_shift($css);
-                    if (Url::isRelative($file)) {
-                        $css = ArrayHelper::merge($this->cssOptions, $css);
-                        array_unshift($css, $converter->convert($file, $this->basePath));
-                        $this->css[$i] = $css;
-                    }
-                } elseif (Url::isRelative($css)) {
-                    $this->css[$i] = $converter->convert($css, $this->basePath);
+                if (UrlHelper::isRelative($css)) {
+                    $this->css[$i] = $this->convert($css);
                 }
             }
         }
+        var_dump($this->css);
+    }
+
+    public function convert($asset)
+    {
+        $asset = $this->basePath . $asset;
+        $pos = strrpos($asset, '.');
+        var_dump(Eazy::$component->request->getRemoteAddr());
+        if ($pos !== false) {
+//            $ext = substr($asset, $pos + 1);
+//            if (isset($this->commands[$ext])) {
+//                list($ext, $command) = $this->commands[$ext];
+//                $result = substr($asset, 0, $pos + 1) . $ext;
+//                if ($this->forceConvert || @filemtime("$basePath/$result") < @filemtime("$basePath/$asset")) {
+//                    $this->runCommand($command, $basePath, $asset, $result);
+//                }
+//
+//                return $result;
+//            }
+        }
+
+        return $asset;
     }
 }

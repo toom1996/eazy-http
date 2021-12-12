@@ -18,9 +18,9 @@ use Swoole\Coroutine;
  */
 class Request extends ContextComponent
 {
-    
     public function getRequest()
     {
+        var_dump($this->properties);
         return $this->properties['request'];
     }
     
@@ -72,7 +72,7 @@ class Request extends ContextComponent
 
     public function getMethod()
     {
-        return $this->request->server['request_method'];
+        return $this->getRequest()->server['request_method'];
     }
     
     public function getUri()
@@ -83,12 +83,20 @@ class Request extends ContextComponent
     
     public function resolve(\Swoole\Http\Request $request)
     {
-        $this->setProperty('request', $request);
+        $this->requset = $request;
+        var_dump($this->getRequest());
+        die;
+//        $this->setProperty('request', $request);
         [$handler, $param] = Eazy::$component->router->parseRequest();
 
 //        var_dump('HANDLER') . PHP_EOL;
 //        var_dump($handler);
 //        var_dump($param);
         return $handler;
+    }
+
+    public function getRemoteAddr()
+    {
+        return $this->getRequest()['server']['remote_addr'] ?? null;
     }
 }
