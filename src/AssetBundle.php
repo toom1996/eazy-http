@@ -57,32 +57,21 @@ class AssetBundle extends BaseObject
                 }
             }
             foreach ($this->css as $i => $css) {
+                $this->css[$i] = $this->convert($css);
                 if (UrlHelper::isRelative($css)) {
                     $this->css[$i] = $this->convert($css);
                 }
             }
         }
-        var_dump($this->css);
     }
 
     public function convert($asset)
     {
-        $asset = $this->basePath . $asset;
-        $pos = strrpos($asset, '.');
-        var_dump(Eazy::$component->request->getRemoteAddr());
-        if ($pos !== false) {
-//            $ext = substr($asset, $pos + 1);
-//            if (isset($this->commands[$ext])) {
-//                list($ext, $command) = $this->commands[$ext];
-//                $result = substr($asset, 0, $pos + 1) . $ext;
-//                if ($this->forceConvert || @filemtime("$basePath/$result") < @filemtime("$basePath/$asset")) {
-//                    $this->runCommand($command, $basePath, $asset, $result);
-//                }
-//
-//                return $result;
-//            }
+        if (UrlHelper::isRelative($asset)) {
+            $asset = $asset = '/' . trim($asset, '/');
         }
 
         return $asset;
     }
+    
 }

@@ -36,7 +36,6 @@ class View extends \eazy\http\components\View
     protected function renderHeadHtml()
     {
         $lines = [];
-        var_dump($this->cssFiles);
         if ($this->cssFiles) {
             $lines[] = implode("\n", $this->cssFiles);
         }
@@ -56,7 +55,6 @@ class View extends \eazy\http\components\View
 //        if (!empty($this->js[self::POS_HEAD])) {
 //            $lines[] = Html::script(implode("\n", $this->js[self::POS_HEAD]));
 //        }
-        var_dump($lines);
         return empty($lines) ? '' : implode("\n", $lines);
     }
 
@@ -65,9 +63,22 @@ class View extends \eazy\http\components\View
 
     }
 
-    public function registerFile()
+    public static function registerCss($file)
     {
+        echo __FUNCTION__;
+        $css = Eazy::$component->view->cssFiles;
+        $css[] = self::registerFile('css', $file);
+        Eazy::$component->view->cssFiles = $css;
+    }
 
+
+    public static function registerFile($type, $file)
+    {
+        if ($type == 'css') {
+            $files = HtmlHelper::cssFile($file);
+        }
+
+        return $files;
     }
 
     public function registerAssetBundle($name, $bundleName = null)
@@ -101,18 +112,18 @@ class View extends \eazy\http\components\View
         //            }
         //        }
         //
-        var_dump($this->assetBundles);
         $this->loadBundleFiles($name);
-        return $this->assetBundles[$name];
     }
 
     public function registerBundleCssFiles(AssetBundle $bundle)
     {
         foreach ($bundle->css as $file) {
-            $assetBundle[$bundle::class]['css'][] = HtmlHelper::cssFile($file);
+            $assetBundle[$bundle::class]['css'][] = self::registerFile('css', $file);
         }
 
-        $this->assetBundles = ArrayHelper::merge($this->assetBundles, $assetBundle);
+        if (isset($assetBundle)) {
+            $this->assetBundles = ArrayHelper::merge($this->assetBundles, $assetBundle);
+        }
     }
 
     protected function loadBundle($name)
@@ -127,8 +138,9 @@ class View extends \eazy\http\components\View
 
     public function loadBundleFiles($name)
     {
-        $bundleFiles = $this->assetBundles[$name];
+        echo __FUNCTION__ . PHP_EOL;
 //        $this->jsFiles = $bundleFiles['js'];
-        $this->cssFiles = $bundleFiles['css'];
+        $this->cssFiles = ArrayHelper::merge($this->cssFiles, isset($this->assetBundles[$name]) ? $this->assetBundles[$name]['css'] : []);
     }
+
 }

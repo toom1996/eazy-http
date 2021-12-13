@@ -26,7 +26,7 @@ class Controller extends \eazy\http\Controller
     }
 
 
-    public function beforeAction($action)
+    public function beforeAction($action): bool
     {
         // TODO trigger `beforeAction` event.
         return true;
