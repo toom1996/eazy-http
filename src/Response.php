@@ -121,6 +121,7 @@ class Response extends ContextComponent
         }
 //        var_dump($this->response);
         $this->response->setStatusCode($this->statusCode);
+        var_dump($this->content);
         $this->response->end($this->content);
     }
     

@@ -28,11 +28,12 @@ class Controller extends \eazy\http\Controller
 
     public function beforeAction($action): bool
     {
+        echo __FUNCTION__;
         // TODO trigger `beforeAction` event.
         return true;
     }
 
-    public function afterAction($action, $result)
+    public function afterAction($action, &$result)
     {
         echo PHP_EOL;
         echo 'afterAction -> ' . $action;
