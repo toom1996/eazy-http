@@ -39,6 +39,10 @@ class View extends \eazy\http\components\View
         if ($this->cssFiles) {
             $lines[] = implode("\n", $this->cssFiles);
         }
+
+        if ($this->jsFiles) {
+            $lines[] = implode("\n", $this->jsFiles);
+        }
 //
 //        if (!empty($this->linkTags)) {
 //            $lines[] = implode("\n", $this->linkTags);
@@ -58,14 +62,15 @@ class View extends \eazy\http\components\View
         return empty($lines) ? '' : implode("\n", $lines);
     }
 
-    public function registerJs()
+    public static function registerJs($file, $options = [])
     {
-
+        $js = Eazy::$component->view->jsFiles;
+        $js[] = self::registerFile('js', $file);
+        Eazy::$component->view->jsFiles = $js;
     }
 
-    public static function registerCss($file)
+    public static function registerCss($file, $options = [])
     {
-        echo __FUNCTION__;
         $css = Eazy::$component->view->cssFiles;
         $css[] = self::registerFile('css', $file);
         Eazy::$component->view->cssFiles = $css;
@@ -76,6 +81,10 @@ class View extends \eazy\http\components\View
     {
         if ($type == 'css') {
             $files = HtmlHelper::cssFile($file);
+        }
+
+        if ($type == 'js') {
+            $files = HtmlHelper::jsFile($file);
         }
 
         return $files;
@@ -97,7 +106,7 @@ class View extends \eazy\http\components\View
         // register dependencies
 //        $pos = isset($bundle->jsOptions['position']) ? $bundle->jsOptions['position'] : null;
         $this->registerBundleCssFiles($bundle);
-//        $this->registerBundleFiles('js', $name,  $bundle->js);
+        $this->registerBundleJsFiles($bundle);
         //
         //        if ($position !== null) {
         //            $pos = isset($bundle->jsOptions['position']) ? $bundle->jsOptions['position'] : null;
@@ -126,6 +135,17 @@ class View extends \eazy\http\components\View
         }
     }
 
+    public function registerBundleJsFiles(AssetBundle $bundle)
+    {
+        foreach ($bundle->js as $file) {
+            $assetBundle[$bundle::class]['js'][] = self::registerFile('js', $file);
+        }
+
+        if (isset($assetBundle)) {
+            $this->assetBundles = ArrayHelper::merge($this->assetBundles, $assetBundle);
+        }
+    }
+
     protected function loadBundle($name)
     {
         $bundle = Eazy::createObject($name);
@@ -138,9 +158,9 @@ class View extends \eazy\http\components\View
 
     public function loadBundleFiles($name)
     {
-        echo __FUNCTION__ . PHP_EOL;
 //        $this->jsFiles = $bundleFiles['js'];
         $this->cssFiles = ArrayHelper::merge($this->cssFiles, isset($this->assetBundles[$name]) ? $this->assetBundles[$name]['css'] : []);
+//        $this->jsFiles = ArrayHelper::merge($this->jsFiles, isset($this->assetBundles[$name]) ? $this->assetBundles[$name]['js'] : []);
     }
 
 }

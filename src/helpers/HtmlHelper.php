@@ -269,7 +269,8 @@ class HtmlHelper
      */
     public static function jsFile($url, $options = [])
     {
-        $options['src'] = Url::to($url);
+//        $options['src'] = Url::to($url);
+        $options['src'] = ($url);
         if (isset($options['condition'])) {
             $condition = $options['condition'];
             unset($options['condition']);

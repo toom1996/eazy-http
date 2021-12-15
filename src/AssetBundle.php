@@ -44,7 +44,6 @@ class AssetBundle extends BaseObject
 
     public function publish()
     {
-        echo __FUNCTION__;
 
 //        if ($this->sourcePath !== null && !isset($this->basePath, $this->baseUrl)) {
 //            [$this->basePath, $this->baseUrl] = $bundle->publish($this->sourcePath, $this->publishOptions);
