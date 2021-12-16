@@ -36,7 +36,6 @@ class ServiceLocator extends BaseComponent
         if ($this->has($name)) {
             return $this->get($name);
         }
-
         return parent::__get($name);
     }
 }
