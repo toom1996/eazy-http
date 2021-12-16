@@ -114,7 +114,7 @@ class Request extends ContextComponent
             return $params;
         }
 
-        return isset($params[$name]) ? $params[$name] : $defaultValue;
+        return isset($params[$name]) ? $params[$name] : $default;
     }
 
     /**

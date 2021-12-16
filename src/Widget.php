@@ -29,7 +29,7 @@ class Widget extends BaseObject
         try {
             /* @var $widget Widget */
             $config['class'] = get_called_class();
-            $widget = Yii::createObject($config);
+            $widget = Eazy::createObject($config);
             $out = '';
             if ($widget->beforeRun()) {
                 $result = $widget->run();
@@ -128,6 +128,7 @@ class Widget extends BaseObject
      */
     public function render($view, $params = [])
     {
+        return Eazy::$component->view->render($view, $params);
         return $this->getView()->render($view, $params, $this);
     }
 
@@ -140,6 +141,9 @@ class Widget extends BaseObject
      */
     public function renderFile($file, $params = [])
     {
+        $view = Eazy::$component->view;
+        $file = $view->findViewFile($file);
+        return Eazy::$component->view->renderFile($file, $params);
         return $this->getView()->renderFile($file, $params, $this);
     }
 
@@ -181,9 +185,10 @@ class Widget extends BaseObject
      */
     public function beforeRun()
     {
-        $event = new WidgetEvent();
-        $this->trigger(self::EVENT_BEFORE_RUN, $event);
-        return $event->isValid;
+        return true;
+//        $event = new WidgetEvent();
+//        $this->trigger(self::EVENT_BEFORE_RUN, $event);
+//        return $event->isValid;
     }
 
     /**
@@ -209,9 +214,9 @@ class Widget extends BaseObject
      */
     public function afterRun($result)
     {
-        $event = new WidgetEvent();
-        $event->result = $result;
-        $this->trigger(self::EVENT_AFTER_RUN, $event);
-        return $event->result;
+//        $event = new WidgetEvent();
+//        $event->result = $result;
+//        $this->trigger(self::EVENT_AFTER_RUN, $event);
+//        return $event->result;
     }
 }
