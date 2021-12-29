@@ -26,6 +26,11 @@ class Controller extends ContextComponent
     private array $_controllerMap = [];
 
     private array $_controllerMapParams = [];
+
+
+    const EVENT_BEFORE_ACTION = 'beforeAction';
+
+    const EVENT_AFTER_ACTION = 'afterAction';
     
     
     public function runAction($path)

@@ -225,4 +225,12 @@ class Response extends ContextComponent
 
         return $this;
     }
+
+    /**
+     * Batch settings cookie.
+     */
+    public function setRawCookie(string $key, string $value = '', int $expire = 0 , string $path = '/', string $domain  = '', bool $secure = false , bool $httponly = false, string $samesite = '', string $priority = '')
+    {
+        $this->response->cookie($key, $value, $expire, $path, $domain);
+    }
 }

@@ -20,6 +20,7 @@ use eazy\http\ContextComponent;
 use eazy\http\databases\DbConnection;
 use eazy\http\di\Container;
 use eazy\http\Eazy;
+use eazy\http\Event;
 use eazy\http\exceptions\InvalidConfigException;
 use eazy\http\exceptions\UnknownClassException;
 use eazy\http\helpers\ArrayHelper;
@@ -54,6 +55,7 @@ class WorkerStartCallback
         'view' => ['class' => \eazy\http\web\View::class],
         'router' => ['class' => \eazy\http\Router::class],
         'db' => ['class' => DbConnection::class],
+        'event' => ['class' => Event::class],
     ];
 
     public static function onWorkerStart($server, int $workerId)

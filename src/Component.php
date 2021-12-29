@@ -16,7 +16,6 @@ use Swoole\Coroutine;
  * @property integer $classId
  * @property integer $coroutineUid
  */
-#[\Attribute(\Attribute::TARGET_FUNCTION)]
 class Component extends BaseObject
 {
     /**
@@ -54,5 +53,83 @@ class Component extends BaseObject
         }
 
         throw new UnknownClassException('Getting unknown property: ' . get_class($this) . '::' . $name);
+    }
+
+    public function event()
+    {
+        return [];
+    }
+
+
+    public function trigger()
+    {
+        $this->ensureBehaviors();
+
+        $eventHandlers = [];
+        foreach ($this->_eventWildcards as $wildcard => $handlers) {
+            if (StringHelper::matchWildcard($wildcard, $name)) {
+                $eventHandlers = array_merge($eventHandlers, $handlers);
+            }
+        }
+
+        if (!empty($this->_events[$name])) {
+            $eventHandlers = array_merge($eventHandlers, $this->_events[$name]);
+        }
+
+        if (!empty($eventHandlers)) {
+            if ($event === null) {
+                $event = new Event();
+            }
+            if ($event->sender === null) {
+                $event->sender = $this;
+            }
+            $event->handled = false;
+            $event->name = $name;
+            foreach ($eventHandlers as $handler) {
+                $event->data = $handler[1];
+                call_user_func($handler[0], $event);
+                // stop further handling if the event is handled
+                if ($event->handled) {
+                    return;
+                }
+            }
+        }
+
+        // invoke class-level attached handlers
+        Event::trigger($this, $name, $event);
+    }
+
+    public function ensureBehaviors()
+    {
+        if ($this->_behaviors === null) {
+            $this->_behaviors = [];
+            foreach ($this->behaviors() as $name => $behavior) {
+                $this->attachBehaviorInternal($name, $behavior);
+            }
+        }
+    }
+
+    private function attachBehaviorInternal($name, $behavior)
+    {
+        if (!($behavior instanceof Behavior)) {
+            $behavior = Yii::createObject($behavior);
+        }
+        if (is_int($name)) {
+            $behavior->attach($this);
+            $this->_behaviors[] = $behavior;
+        } else {
+            if (isset($this->_behaviors[$name])) {
+                $this->_behaviors[$name]->detach();
+            }
+            $behavior->attach($this);
+            $this->_behaviors[$name] = $behavior;
+        }
+
+        return $behavior;
+    }
+
+    public function behaviors()
+    {
+        return [];
     }
 }

@@ -14,6 +14,7 @@ use eazy\http\Eazy;
 class Controller extends \eazy\http\Controller
 {
     protected ?string $layout = null;
+    
 
     public function runAction($action)
     {
@@ -29,6 +30,7 @@ class Controller extends \eazy\http\Controller
     public function beforeAction($action): bool
     {
         echo __FUNCTION__;
+        $this->trigger(self::EVENT_BEFORE_ACTION, $event);
         // TODO trigger `beforeAction` event.
         return true;
     }

@@ -2,9 +2,9 @@
 
 namespace eazy\http;
 
-use Composer\EventDispatcher\EventDispatcher;
 
-class Event extends EventDispatcher
+class Event extends BaseObject
 {
-
+    public $_behaviors;
+    
 }
