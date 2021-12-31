@@ -30,7 +30,7 @@ class Controller extends \eazy\http\Controller
     public function beforeAction($action): bool
     {
         echo __FUNCTION__;
-        $this->trigger(self::EVENT_BEFORE_ACTION, $event);
+        $this->trigger(self::EVENT_BEFORE_ACTION);
         // TODO trigger `beforeAction` event.
         return true;
     }

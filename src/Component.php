@@ -61,59 +61,81 @@ class Component extends BaseObject
     }
 
 
-    public function trigger()
+    public function trigger($name)
     {
         $this->ensureBehaviors();
-
-        $eventHandlers = [];
-        foreach ($this->_eventWildcards as $wildcard => $handlers) {
-            if (StringHelper::matchWildcard($wildcard, $name)) {
-                $eventHandlers = array_merge($eventHandlers, $handlers);
-            }
-        }
-
-        if (!empty($this->_events[$name])) {
-            $eventHandlers = array_merge($eventHandlers, $this->_events[$name]);
-        }
-
-        if (!empty($eventHandlers)) {
-            if ($event === null) {
-                $event = new Event();
-            }
-            if ($event->sender === null) {
-                $event->sender = $this;
-            }
-            $event->handled = false;
-            $event->name = $name;
-            foreach ($eventHandlers as $handler) {
-                $event->data = $handler[1];
-                call_user_func($handler[0], $event);
-                // stop further handling if the event is handled
-                if ($event->handled) {
-                    return;
-                }
-            }
-        }
-
-        // invoke class-level attached handlers
-        Event::trigger($this, $name, $event);
+//
+//        $eventHandlers = [];
+//        foreach ($this->_eventWildcards as $wildcard => $handlers) {
+//            if (StringHelper::matchWildcard($wildcard, $name)) {
+//                $eventHandlers = array_merge($eventHandlers, $handlers);
+//            }
+//        }
+//
+//        if (!empty($this->_events[$name])) {
+//            $eventHandlers = array_merge($eventHandlers, $this->_events[$name]);
+//        }
+//
+//        if (!empty($eventHandlers)) {
+//            if ($event === null) {
+//                $event = new Event();
+//            }
+//            if ($event->sender === null) {
+//                $event->sender = $this;
+//            }
+//            $event->handled = false;
+//            $event->name = $name;
+//            foreach ($eventHandlers as $handler) {
+//                $event->data = $handler[1];
+//                call_user_func($handler[0], $event);
+//                // stop further handling if the event is handled
+//                if ($event->handled) {
+//                    return;
+//                }
+//            }
+//        }
+//
+//        // invoke class-level attached handlers
+        Eazy::$component->event->trigger($this, $name, $event);
     }
 
     public function ensureBehaviors()
     {
-        if ($this->_behaviors === null) {
-            $this->_behaviors = [];
+        if (!Eazy::$component->event->getBehaviors()) {
             foreach ($this->behaviors() as $name => $behavior) {
                 $this->attachBehaviorInternal($name, $behavior);
             }
         }
     }
 
+    public function on($name, $handler, $data = null, $append = true)
+    {
+        $this->ensureBehaviors();
+
+        if (strpos($name, '*') !== false) {
+            if ($append || empty($this->_eventWildcards[$name])) {
+                $this->_eventWildcards[$name][] = [$handler, $data];
+            } else {
+                array_unshift($this->_eventWildcards[$name], [$handler, $data]);
+            }
+            return;
+        }
+
+        if ($append || empty($this->_events[$name])) {
+            Eazy::$component->event->setEvent($handler, $data);
+//            $this->_events[$name][] = [$handler, $data];
+        } else {
+            array_unshift($this->_events[$name], [$handler, $data]);
+        }
+    }
+
     private function attachBehaviorInternal($name, $behavior)
     {
+        // not actionFilter
         if (!($behavior instanceof Behavior)) {
-            $behavior = Yii::createObject($behavior);
+            $behavior = Eazy::createObject($behavior);
         }
+        
         if (is_int($name)) {
             $behavior->attach($this);
             $this->_behaviors[] = $behavior;

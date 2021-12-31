@@ -1,6 +1,6 @@
 <?php
 
-namespace eazy\http\filter;
+namespace eazy\http\filters;
 
 use eazy\http\ActionFilter;
 

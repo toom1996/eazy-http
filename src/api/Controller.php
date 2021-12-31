@@ -3,7 +3,7 @@
 namespace eazy\api;
 
 use eazy\http\Eazy;
-use eazy\http\filter\CorsFilter;
+use eazy\http\filters\CorsFilter;
 
 class Controller extends \eazy\http\web\Controller
 {
@@ -19,6 +19,7 @@ class Controller extends \eazy\http\web\Controller
     {
         
     }
+    
     
     public function afterAction($action, &$result)
     {
