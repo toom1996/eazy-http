@@ -19,7 +19,7 @@ class BaseObject
 
     public function init()
     {
-       
+       App::info(get_called_class() . ' Initilize');
     }
     
     public static function configure($object, $properties)

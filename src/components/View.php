@@ -6,7 +6,6 @@ use eazy\http\App;
 use eazy\http\AssetBundle;
 use eazy\http\Component;
 use eazy\http\ContextComponent;
-use eazy\http\Eazy;
 use eazy\http\exceptions\InvalidConfigException;
 use eazy\http\exceptions\ViewNotFoundException;
 
@@ -51,13 +50,13 @@ class View extends ContextComponent
      *
      * ```php
      * // render based on alias.
-     * Eazy::$component->view->render('@app/views/index');
+     * App::$locator->view->render('@app/views/index');
      * 
      * // render based on file path.
-     * Eazy::$component->view->render('index');
+     * App::$locator->view->render('index');
      * 
      * // render with params.
-     * Eazy::$component->view->render('index', ['foo' => 'bar']);
+     * App::$locator->view->render('index', ['foo' => 'bar']);
      * ```
      * @param string $view Render file path.
      * @param  array  $params the parameters (name-value pairs) that should be made available in the view.

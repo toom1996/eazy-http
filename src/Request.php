@@ -32,22 +32,22 @@ class Request extends ContextComponent
 {
     public function getFd()
     {
-        return $this->request->fd;
+        return $this->_request()->fd;
     }
 
     public function getStreamId()
     {
-        return $this->request->streamId;
+        return $this->_request()->streamId;
     }
 
     public function getHeader(): array
     {
-        return $this->request->header;
+        return $this->_request()->header;
     }
     
     public function getServer()
     {
-        return $this->request->server;
+        return $this->_request()->server;
     }
 
     /**
@@ -67,9 +67,8 @@ class Request extends ContextComponent
      */
     public function resolve(\Swoole\Http\Request $request)
     {
-        var_dump($request);
         $this->_request = $request;
-        [$handler, $param] = Eazy::$component->router->parseRequest();
+        [$handler, $param] = App::$locator->router->parseRequest();
         $this->_routeParam = $param ?: [];
         return $handler;
     }
@@ -133,5 +132,14 @@ class Request extends ContextComponent
     public function getQueryString()
     {
         return $this->_request()->server['query_string'] ?? null;
+    }
+
+    /**
+     * Returns whether this is an OPTIONS request.
+     * @return bool whether this is a OPTIONS request.
+     */
+    public function getIsOptions(): bool
+    {
+        return $this->getMethod() == 'OPTIONS';
     }
 }

@@ -7,46 +7,19 @@ namespace eazy\http;
  */
 class Event extends ContextComponent
 {
-    public static $behaviors;
+    public $eventMap;
 
-    public static $event;
 
-    public function getBehaviors()
+
+    public function execute($behavior, $name, $sender)
     {
-        return $this->getProperties('behaviors');
-    }
-
-    public function setEvent($handler, $data)
-    {
-        $originEvent = $this->properties['event'];
-        $originEvent[] = [$handler, $data];
-        $this->properties['event'] = $originEvent;
-    }
-    
-
-    public function attachBehaviorInternal($name, $behavior)
-    {
-        // not actionFilter
-        if (!($behavior instanceof Behavior)) {
-            $behavior = Eazy::createObject($behavior);
+        if (!isset($this->eventMap[$behavior])) {
+            $this->eventMap[$behavior] = App::createObject($behavior);
         }
 
-        if (is_int($name)) {
-            $behavior->attach($this);
-            $this->_behaviors[] = $behavior;
-        } else {
-            if (isset($this->_behaviors[$name])) {
-                $this->_behaviors[$name]->detach();
-            }
-            $behavior->attach($this);
-            $this->_behaviors[$name] = $behavior;
+
+        if (isset($this->eventMap[$behavior]->event()[$name])) {
+            $this->eventMap[$behavior]->{$this->eventMap[$behavior]->event()[$name]}($sender);
         }
-
-        return $behavior;
-    }
-
-    public static function triggerEvent()
-    {
-       
     }
 }

@@ -31,13 +31,19 @@ class Controller extends ContextComponent
     const EVENT_BEFORE_ACTION = 'beforeAction';
 
     const EVENT_AFTER_ACTION = 'afterAction';
-    
-    
+
+    /**
+     * @param $path
+     *
+     * @return \eazy\http\Sender
+     * @throws \eazy\http\exceptions\InvalidConfigException
+     * @throws \eazy\http\exceptions\UnknownClassException
+     */
     public function runAction($path)
     {
-        $controller = $this->setControllerMap($path);
-        if (is_object($controller) && $controller instanceof Controller) {
-            return $controller->runAction($controller->method);
+        $controller = $this->getController($path);
+        if (is_object($controller) && $controller instanceof \eazy\http\web\Controller) {
+            return $controller->run();
         }
 
         throw new InvalidConfigException("Run action fail.");
@@ -45,10 +51,8 @@ class Controller extends ContextComponent
 
     private function setControllerMap($handler)
     {
-        if (isset($this->_controllerMap[$handler])) {
-            $controllerMap = $this->_controllerMap[$handler];
-        }else{
-            $handlerAlias = Eazy::getAlias($handler);
+        if (!isset($this->_controllerMap[$handler])) {
+            $handlerAlias = App::getAlias($handler);
             $params = explode('/', $handlerAlias);
 
             // find controller and action.
@@ -74,34 +78,58 @@ class Controller extends ContextComponent
             $classNamespace = BaseFileHelper::getNamespace($handlerFile);
             $className = '\\' . $classNamespace . '\\' . basename(str_replace('.php', '', $handlerFile));
 
-//            echo 'new Controller' . PHP_EOL;
-            $this->_controllerMap[$handler] = [
-                $className, $config
-            ];
+            //            echo 'new Controller' . PHP_EOL;
+            $this->_controllerMap[$handler] = App::createObject($className, $config);
         }
 
-//        echo 'return controller';
-//        var_dump($this->_controllerMap[$handler]);
-        return Eazy::createObject(...$this->_controllerMap[$handler]);
+        var_dump($this->_controllerMap[$handler]);
+        return $this->_controllerMap[$handler];
     }
 
-    public function setAction($action)
-    {
-        $this->setProperty('action', $action);
-    }
 
-    public function setMethod($method)
+    private function getController($handler)
     {
-        $this->setProperty('method', $method);
+       if (!isset($this->_controllerMap[$handler])) {
+           $mapping = [];
+           $handlerAlias = App::getAlias($handler);
+           $params = explode('/', $handlerAlias);
+
+           [$controller, $action] = array_slice($params, -2, 2);
+           if (strpos($controller, 'Controller') === false) {
+               $controller = ucfirst($controller) . 'Controller';
+           }
+           if (strpos($action, 'action') === false) {
+               $action = 'action'.ucfirst($action);
+           }
+
+           $mapping['method'] = $action;
+           $handlerFile = implode('/',
+               array_merge(array_slice($params, 0, count($params) - 2),
+                   [$controller . '.php']));
+
+           if (!file_exists($handlerFile)) {
+               throw new UnknownClassException("{Unknown class {$handler}");
+           }
+
+           $classNamespace = BaseFileHelper::getNamespace($handlerFile);
+           $className = '\\' . $classNamespace . '\\' . basename(str_replace('.php', '', $handlerFile));
+           $mapping[] = App::createObject($className);
+
+
+           $this->_controllerMap[$handler] = $mapping;
+       }
+
+       foreach ($this->_controllerMap[$handler] as $item => $value) {
+           if (!is_numeric($item)) {
+               $this->setProperty($item, $value);
+           }
+       }
+       
+       return end($this->_controllerMap[$handler]);
     }
 
     public function getMethod()
     {
-        return $this->properties['method'];
-    }
-
-    public function getAction()
-    {
-        return $this->properties['action'];
+        return $this->getProperties('method');
     }
 }

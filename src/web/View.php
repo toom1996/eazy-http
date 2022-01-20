@@ -2,8 +2,8 @@
 
 namespace eazy\http\web;
 
+use eazy\http\App;
 use eazy\http\AssetBundle;
-use eazy\http\Eazy;
 use eazy\http\helpers\ArrayHelper;
 use eazy\http\helpers\HtmlHelper;
 
@@ -64,16 +64,16 @@ class View extends \eazy\http\components\View
 
     public static function registerJs($file, $options = [])
     {
-        $js = Eazy::$component->view->jsFiles;
+        $js = App::$locator->view->jsFiles;
         $js[] = self::registerFile('js', $file);
-        Eazy::$component->view->jsFiles = $js;
+        App::$locator->view->jsFiles = $js;
     }
 
     public static function registerCss($file, $options = [])
     {
-        $css = Eazy::$component->view->cssFiles;
+        $css = App::$locator->view->cssFiles;
         $css[] = self::registerFile('css', $file);
-        Eazy::$component->view->cssFiles = $css;
+        App::$locator->view->cssFiles = $css;
     }
 
 

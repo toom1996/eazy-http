@@ -32,7 +32,6 @@ class Router extends ContextComponent
         $webRoute = $this->route;
         return simpleDispatcher(function (RouteCollector $controller) use ($webRoute) {
             foreach ($this->route as $prefix => $rules) {
-                echo '~~';
                 if (count($rules) == count($rules, COUNT_RECURSIVE)) {
                     [$method, $route, $handler] = $this->parseRule($rules);
                     $controller->addRoute($method, $route, $handler);
@@ -81,7 +80,7 @@ class Router extends ContextComponent
     
     public function matchRoute()
     {
-        $request = Container::$instance->get('request');
+        $request = App::$locator->get('request');
         $httpMethod = $request->getMethod();
         $uri = $request->getUri();
         if (false !== $pos = strpos($uri, '?')) {
@@ -100,7 +99,7 @@ class Router extends ContextComponent
         }else{
             $handler = $path;
             // If route is `@controllers/site/index`, will be convert @controller to BathPath
-            $handlerAlias = Eazy::getAlias($handler);
+            $handlerAlias = App::getAlias($handler);
             $ex = explode('/', $handlerAlias);
 
             // Find controller and action.
@@ -136,7 +135,7 @@ class Router extends ContextComponent
             $controller = self::$controllerMap[$handler];
         }
         
-        $controller = Eazy::createObject($controller);
+        $controller = App::createObject($controller);
         if (is_object($controller) && $controller instanceof Controller) {
             return call_user_func([$controller, $controller->action]);
         }

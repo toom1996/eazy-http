@@ -3,8 +3,8 @@
 namespace eazy\http;
 
 use eazy\helpers\BaseArrayHelper;
+use eazy\http\App;
 use eazy\http\components\UrlManager;
-use eazy\http\Eazy;
 use eazy\http\exceptions\InvalidConfigException;
 use eazy\http\exceptions\UnknownClassException;
 use Swoole\Coroutine;
@@ -18,11 +18,9 @@ use Swoole\Coroutine;
  */
 class Component extends BaseObject
 {
-    /**
-     * Is bootstrap component.
-     * @var bool 
-     */
-    public bool $bootstrap = true;
+
+    public $behaviors;
+
 
     public function __set(string $name, $value)
     {
@@ -61,9 +59,15 @@ class Component extends BaseObject
     }
 
 
-    public function trigger($name)
+    public function trigger($name, $sender = null)
     {
-        $this->ensureBehaviors();
+        App::info($this->behaviors());
+        foreach ($this->behaviors() as $behavior) {
+            App::info($behavior);
+            App::$locator->event->execute($behavior, $name, $sender);
+        }
+//        App::$locator->event->
+//        $this->ensureBehaviors();
 //
 //        $eventHandlers = [];
 //        foreach ($this->_eventWildcards as $wildcard => $handlers) {
@@ -96,12 +100,12 @@ class Component extends BaseObject
 //        }
 //
 //        // invoke class-level attached handlers
-        Eazy::$component->event->trigger($this, $name, $event);
+//        App::$locator->event->trigger($this, $name, $event);
     }
 
     public function ensureBehaviors()
     {
-        if (!Eazy::$component->event->getBehaviors()) {
+        if (!App::$locator->event->getBehaviors()) {
             foreach ($this->behaviors() as $name => $behavior) {
                 $this->attachBehaviorInternal($name, $behavior);
             }
@@ -122,7 +126,7 @@ class Component extends BaseObject
         }
 
         if ($append || empty($this->_events[$name])) {
-            Eazy::$component->event->setEvent($handler, $data);
+            App::$locator->event->setEvent($handler, $data);
 //            $this->_events[$name][] = [$handler, $data];
         } else {
             array_unshift($this->_events[$name], [$handler, $data]);
@@ -153,5 +157,16 @@ class Component extends BaseObject
     public function behaviors()
     {
         return [];
+    }
+
+    public function __call($name, $params)
+    {
+        $proxyMethod = 'proxy' . $name;
+        if (method_exists($this, $proxyMethod)) {
+            echo 'proxy';
+            return call_user_func_array([$this, $proxyMethod], $params);
+        }
+
+        throw new UnknownClassException('Getting unknown method: ' . get_class($this) . '::' . $proxyMethod);
     }
 }

@@ -7,7 +7,6 @@ use eazy\http\Component;
 use eazy\base\Exception;
 use eazy\http\Context;
 use eazy\http\ContextComponent;
-use eazy\http\Eazy;
 use eazy\http\exceptions\InvalidConfigException;
 use eazy\http\exceptions\UnknownClassException;
 use Swoole\Coroutine;
@@ -67,13 +66,13 @@ class ErrorHandler extends ContextComponent
     {
         // TODO: Implement renderException() method.
 
-        $response = Eazy::$component->response;
+        $response = App::$locator->response;
         try {
             $response->setStatusCodeByException($exception);
 
             $useErrorView = $response->format === \eazy\http\Response::FORMAT_HTML;
             if ($useErrorView && $this->errorAction !== null) {
-                $result = Eazy::$component->controller->runAction($this->errorAction);
+                $result = App::$locator->controller->runAction($this->errorAction);
                 $response->setContent($result);
 //                var_dump($result);
             } elseif ($response->format === Response::FORMAT_HTML) {
@@ -207,7 +206,7 @@ class ErrorHandler extends ContextComponent
     public function renderFile($_file_, $_params_)
     {
         $_params_['handler'] = $this;
-        if ($this->exception instanceof \ErrorException || !Eazy::$component->has('view')) {
+        if ($this->exception instanceof \ErrorException || !App::$locator->has('view')) {
             ob_start();
             ob_implicit_flush(false);
             extract($_params_, EXTR_OVERWRITE);
@@ -216,7 +215,7 @@ class ErrorHandler extends ContextComponent
             return ob_get_clean();
         }
 
-        $view = Eazy::$component->view;
+        $view = App::$locator->view;
 
         return $view->renderFile($_file_, $_params_, $this);
     }

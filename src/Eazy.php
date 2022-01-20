@@ -33,6 +33,11 @@ class Eazy
      * @var
      */
     private static $aliases;
+    
+    public static function component()
+    {
+        return self::$component;
+    }
 
 
     /**

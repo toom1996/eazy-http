@@ -12,6 +12,8 @@ use Swoole\Coroutine;
  */
 class ContextComponent extends Component
 {
+    public $behaviors;
+    
 
     /**
      * Overwrite class component `__set` method.

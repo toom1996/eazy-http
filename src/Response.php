@@ -13,6 +13,7 @@ use Swoole\Coroutine;
  * @property string $stream
  * @property array $headers
  * @property bool $isSend
+ * @property \eazy\http\Sender $sender
  * @property \Swoole\Http\Response $context
  */
 class Response extends ContextComponent
@@ -101,6 +102,8 @@ class Response extends ContextComponent
 
     const FORMAT_HTML = 'html';
 
+    const EVENT_BEFORE_SEND = 'beforeSend';
+
     public function send()
     {
         if ($this->isSend) {
@@ -108,6 +111,7 @@ class Response extends ContextComponent
         }
         $this->prepare();
         $this->sendHeaders();
+        $this->trigger(self::EVENT_BEFORE_SEND);
         $this->sendContent();
     }
 
@@ -116,12 +120,15 @@ class Response extends ContextComponent
         // Set isSend is true.
         // Prevent duplicate output.
         $this->setProperty('isSend', true);
+        $this->content = $this->sender->data;
         if (!$this->content) {
             $this->content = ob_get_clean();
         }
-//        var_dump($this->response);
+
+        var_dump('TTTTTTTTTTTTTT');
+        $this->trigger(self::EVENT_BEFORE_SEND);
+        App::info('###');
         $this->response->setStatusCode($this->statusCode);
-        var_dump($this->content);
         $this->response->end($this->content);
     }
     
@@ -232,5 +239,15 @@ class Response extends ContextComponent
     public function setRawCookie(string $key, string $value = '', int $expire = 0 , string $path = '/', string $domain  = '', bool $secure = false , bool $httponly = false, string $samesite = '', string $priority = '')
     {
         $this->response->cookie($key, $value, $expire, $path, $domain);
+    }
+
+    public function setSender(Sender $sender)
+    {
+        $this->setProperty('sender', $sender);
+    }
+
+    public function getSender()
+    {
+        return $this->getProperties('sender');
     }
 }

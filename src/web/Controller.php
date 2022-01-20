@@ -6,40 +6,43 @@ use eazy\http\App;
 use eazy\http\BaseController;
 use eazy\http\Component;
 use eazy\http\components\View;
-use eazy\http\Eazy;
+use eazy\http\ContextComponent;
+use eazy\http\Hook;
+use eazy\http\Sender;
 
 /**
  * @property \eazy\http\components\View $view
  */
-class Controller extends \eazy\http\Controller
+class Controller extends ContextComponent
 {
-    protected ?string $layout = null;
-    
-
-    public function runAction($action)
+    /**
+     * @param  \eazy\http\Sender  $sender
+     *
+     * @return \eazy\http\Sender
+     */
+    public function run($request, $response)
     {
-        if ($this->beforeAction($this->action)) {
-            $result = call_user_func([$this, $action]);
+        if ($this->beforeAction($sender)) {
+            $sender->data = call_user_func([$this, App::$locator->controller->getMethod()]);
         }
-        $this->afterAction($action, $result);
+        $this->afterAction();
 
-        return $result;
+        return $sender;
     }
 
 
-    public function beforeAction($action): bool
+    public function beforeAction(): bool
     {
-        echo __FUNCTION__;
-        $this->trigger(self::EVENT_BEFORE_ACTION);
-        // TODO trigger `beforeAction` event.
+        Hook::trigger('hook.beforeAction', $this);
+        $this->trigger(\eazy\http\Controller::EVENT_BEFORE_ACTION);
         return true;
     }
 
-    public function afterAction($action, &$result)
+    public function afterAction($sender)
     {
         echo PHP_EOL;
-        echo 'afterAction -> ' . $action;
-        echo 'afterAction -> ' . $result;
+        $this->trigger(\eazy\http\Controller::EVENT_AFTER_ACTION, $sender);
+        Hook::trigger('hook.afterAction', $this);
     }
 
     /**
@@ -48,7 +51,7 @@ class Controller extends \eazy\http\Controller
      */
     public function getView()
     {
-        $view = Eazy::$component->view;
+        $view = App::$locator->view;
         if ($this->layout) {
             $view->setLayout($this->layout);
         }
